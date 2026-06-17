@@ -57,10 +57,11 @@ export default function PostCard({ post }) {
           <p className="mt-1 text-sm text-[#0F172A] leading-relaxed">{post.content}</p>
 
           <div className="flex items-center gap-6 mt-3">
-            <button className="flex items-center gap-1.5 text-[#64748B] hover:text-[#3B82F6] transition-colors">
+            <Link href={`/post/${post.id}`} className="flex items-center gap-1.5 text-[#64748B] hover:text-[#3B82F6] transition-colors">
               <MessageCircle size={18} />
               <span className="text-xs">{post.commentsCount}</span>
-            </button>
+            </Link>
+
 
             <button className="flex items-center gap-1.5 text-[#64748B] hover:text-[#22C55E] transition-colors">
               <Repeat2 size={18} />
