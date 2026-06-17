@@ -4,7 +4,7 @@ import { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import PostCard from '@/components/post/PostCard';
 import { mockPosts } from '@/mock/post';
-import { currentUser } from '@/mock/users';
+import { currentUser } from '@/mock/user';
 
 function Avatar({ name }) {
   return (

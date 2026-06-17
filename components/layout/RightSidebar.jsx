@@ -1,4 +1,4 @@
-import { suggestedUsers } from '@/mock/users';
+import { suggestedUsers } from '@/mock/user';
 
 function UserAvatar({ name }) {
   return (
