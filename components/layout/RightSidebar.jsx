@@ -1,4 +1,5 @@
 import { suggestedUsers } from '@/mock/user';
+import Link from 'next/link';
 
 function UserAvatar({ name }) {
   return (
@@ -15,13 +16,13 @@ export default function RightSidebar() {
 
       <div className="flex flex-col gap-3">
         {suggestedUsers.map((user) => (
-          <div key={user.id} className="flex items-center gap-3">
+          <Link key={user.id} href={`/profile/${user.id}`} className="flex items-center gap-3 hover:bg-[#F8FAFC] rounded-lg p-1 transition-colors">
             <UserAvatar name={user.name} />
             <div>
               <p className="text-sm font-medium text-[#0F172A]">{user.name}</p>
               <p className="text-xs text-[#64748B]">@{user.username}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </aside>

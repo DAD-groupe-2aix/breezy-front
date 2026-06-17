@@ -1,5 +1,5 @@
 'use client';
-
+import Link from 'next/link';
 import { useState } from 'react';
 import { MessageCircle, Repeat2, Heart, UserPlus, UserCheck } from 'lucide-react';
 
@@ -38,8 +38,11 @@ export default function PostCard({ post }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold text-sm text-[#0F172A]">{post.author.name}</span>
+              <Link href={`/profile/${post.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
+                {post.author.name}
+              </Link>
               <span className="text-sm text-[#64748B]">@{post.author.username}</span>
+
               <span className="text-sm text-[#64748B]">· {formatDate(post.createdAt)}</span>
             </div>
 

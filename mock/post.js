@@ -2,7 +2,7 @@ export const mockPosts = [
   {
     id: "1",
     author: { id: "2", name: "Faycal Rguig", username: "fayz_r", avatar: null },
-    content: "Premier post sur Breezy, c'est trop bien ce réseau !",
+    content: "qui plan cul 20h?",
     likesCount: 12,
     commentsCount: 3,
     liked: false,
@@ -12,7 +12,7 @@ export const mockPosts = [
   {
     id: "2",
     author: { id: "3", name: "Yanis", username: "yanis_b", avatar: null },
-    content: "Next.js 15 avec l'App Router c'est vraiment une autre dimension pour le développement web.",
+    content: "qui five, j'ai besoin de 9 joeurs",
     likesCount: 47,
     commentsCount: 8,
     liked: true,
@@ -28,5 +28,15 @@ export const mockPosts = [
     liked: false,
     following: false,
     createdAt: "2025-06-13T18:45:00Z",
+  },
+  {
+    id: "4",
+    author: { id: "1", name: "Rayene Med", username: "rayene", avatar: null },
+    content: "Je viens de lancer Breezy, mon réseau social. On verra combien de temps ça tient.",
+    likesCount: 3,
+    commentsCount: 1,
+    liked: false,
+    following: false,
+    createdAt: "2025-06-15T08:00:00Z",
   },
 ];
