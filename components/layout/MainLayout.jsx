@@ -1,7 +1,29 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import Sidebar from './Sidebar';
 import RightSidebar from './RightSidebar';
 
 export default function MainLayout({ children }) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <p className="text-[#64748B] text-sm">Chargement...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <Sidebar />

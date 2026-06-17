@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import PostCard from '@/components/post/PostCard';
-import { mockPosts } from '@/mock/post';
-import { currentUser } from '@/mock/user';
+import { usePosts } from '@/context/PostsContext';
+import { useAuth } from '@/context/AuthContext';
 
 function Avatar({ name }) {
   return (
@@ -15,24 +15,25 @@ function Avatar({ name }) {
 }
 
 export default function HomePage() {
-  const [posts, setPosts] = useState(mockPosts);
+  const { posts, addPost } = usePosts();
+  const { user } = useAuth();
+  if (!user) return null;
   const [content, setContent] = useState('');
+  
+  
 
   function handlePublish() {
     if (!content.trim()) return;
-
-    const newPost = {
+    addPost({
       id: Date.now().toString(),
-      author: currentUser,
+      author: { id: user.id, name: user.name, username: user.username, avatar: null },
       content: content.trim(),
       likesCount: 0,
       commentsCount: 0,
       liked: false,
       following: false,
       createdAt: new Date().toISOString(),
-    };
-
-    setPosts([newPost, ...posts]);
+    });
     setContent('');
   }
 
@@ -41,9 +42,8 @@ export default function HomePage() {
       <div className="px-4 py-6">
         <h1 className="text-xl font-bold text-[#0F172A] mb-6">Page d'accueil</h1>
 
-        {/* Composer */}
         <div className="border border-[#E2E8F0] rounded-xl p-4 mb-6 flex gap-3">
-          <Avatar name={currentUser.name} />
+          <Avatar name={user.name} />
           <div className="flex-1">
             <textarea
               value={content}
@@ -65,7 +65,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Fil de posts */}
         <div>
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
