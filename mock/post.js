@@ -1,0 +1,32 @@
+export const mockPosts = [
+  {
+    id: "1",
+    author: { id: "2", name: "Faycal Rguig", username: "fayz_r", avatar: null },
+    content: "Premier post sur Breezy, c'est trop bien ce réseau !",
+    likesCount: 12,
+    commentsCount: 3,
+    liked: false,
+    following: false,
+    createdAt: "2025-06-14T10:30:00Z",
+  },
+  {
+    id: "2",
+    author: { id: "3", name: "Yanis", username: "yanis_b", avatar: null },
+    content: "Next.js 15 avec l'App Router c'est vraiment une autre dimension pour le développement web.",
+    likesCount: 47,
+    commentsCount: 8,
+    liked: true,
+    following: true,
+    createdAt: "2025-06-14T09:00:00Z",
+  },
+  {
+    id: "3",
+    author: { id: "4", name: "Rafed Debiche", username: "rafed_d", avatar: null },
+    content: "Qui est gay sur ce reseau",
+    likesCount: 5,
+    commentsCount: 14,
+    liked: false,
+    following: false,
+    createdAt: "2025-06-13T18:45:00Z",
+  },
+];
