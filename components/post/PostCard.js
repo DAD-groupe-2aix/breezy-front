@@ -1,0 +1,78 @@
+'use client';
+
+import { useState } from 'react';
+import { MessageCircle, Repeat2, Heart, UserPlus, UserCheck } from 'lucide-react';
+
+function Avatar({ name }) {
+  return (
+    <div className="w-10 h-10 rounded-full bg-[#E2E8F0] flex items-center justify-center text-sm font-bold text-[#64748B] shrink-0">
+      {name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+function formatDate(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+}
+
+export default function PostCard({ post }) {
+  const [liked, setLiked] = useState(post.liked);
+  const [likesCount, setLikesCount] = useState(post.likesCount);
+  const [following, setFollowing] = useState(post.following);
+
+  function handleLike() {
+    setLiked(!liked);
+    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+  }
+
+  function handleFollow() {
+    setFollowing(!following);
+  }
+
+  return (
+    <article className="border-b border-[#E2E8F0] px-4 py-4 hover:bg-[#F8FAFC] transition-colors">
+      <div className="flex gap-3">
+        <Avatar name={post.author.name} />
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-sm text-[#0F172A]">{post.author.name}</span>
+              <span className="text-sm text-[#64748B]">@{post.author.username}</span>
+              <span className="text-sm text-[#64748B]">· {formatDate(post.createdAt)}</span>
+            </div>
+
+            <button
+              onClick={handleFollow}
+              className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0"
+            >
+              {following ? <UserCheck size={16} /> : <UserPlus size={16} />}
+            </button>
+          </div>
+
+          <p className="mt-1 text-sm text-[#0F172A] leading-relaxed">{post.content}</p>
+
+          <div className="flex items-center gap-6 mt-3">
+            <button className="flex items-center gap-1.5 text-[#64748B] hover:text-[#3B82F6] transition-colors">
+              <MessageCircle size={18} />
+              <span className="text-xs">{post.commentsCount}</span>
+            </button>
+
+            <button className="flex items-center gap-1.5 text-[#64748B] hover:text-[#22C55E] transition-colors">
+              <Repeat2 size={18} />
+            </button>
+
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-1.5 transition-colors ${liked ? 'text-[#EF4444]' : 'text-[#64748B] hover:text-[#EF4444]'}`}
+            >
+              <Heart size={18} fill={liked ? '#EF4444' : 'none'} />
+              <span className="text-xs">{likesCount}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
