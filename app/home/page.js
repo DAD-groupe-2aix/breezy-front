@@ -17,10 +17,12 @@ function Avatar({ name }) {
 export default function HomePage() {
   const { posts, addPost } = usePosts();
   const { user } = useAuth();
+  const [content, setContent] = useState(''); // ← doit être ICI, avant le if
+
   if (!user) return null;
-  const [content, setContent] = useState('');
-  
-  
+
+
+
 
   function handlePublish() {
     if (!content.trim()) return;
@@ -40,7 +42,9 @@ export default function HomePage() {
   return (
     <MainLayout>
       <div className="px-4 py-6">
-        <h1 className="text-xl font-bold text-[#0F172A] mb-6">Page d'accueil</h1>
+        <h1 className="text-xl font-bold text-[#0F172A] mb-6 hidden md:block">Page d&apos;accueil</h1>
+
+
 
         <div className="border border-[#E2E8F0] rounded-xl p-4 mb-6 flex gap-3">
           <Avatar name={user.name} />

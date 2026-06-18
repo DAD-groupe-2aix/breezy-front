@@ -30,14 +30,23 @@ export default function LoginPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-[#F8FAFC] flex">
-      <div className="flex-1 bg-[#E2E8F0] flex flex-col items-center justify-center">
+    return (
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
+
+      {/* Logo visible uniquement sur mobile, en haut du formulaire */}
+      <div className="flex md:hidden items-center justify-center gap-2 pt-10 pb-4">
+        <Wind size={28} className="text-[#0F172A]" />
+        <span className="text-2xl font-bold text-[#0F172A]">Breezy</span>
+      </div>
+
+      {/* Panneau gauche — visible sur desktop uniquement */}
+      <div className="hidden md:flex flex-1 bg-[#E2E8F0] flex-col items-center justify-center">
         <Wind size={48} className="text-[#0F172A] mb-3" />
         <span className="text-3xl font-bold text-[#0F172A]">Breezy</span>
       </div>
 
-      <div className="flex-1 flex items-center justify-center">
+      {/* Formulaire */}
+      <div className="flex-1 flex items-center justify-center px-4 pb-10">
         <form onSubmit={handleSubmit} className="bg-white border border-[#E2E8F0] rounded-2xl p-8 w-full max-w-sm flex flex-col gap-4">
 
           {error && (
@@ -86,4 +95,6 @@ export default function LoginPage() {
       </div>
     </div>
   );
+
+  
 }
