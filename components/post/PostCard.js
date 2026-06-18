@@ -20,14 +20,18 @@ export default function PostCard({ post }) {
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [following, setFollowing] = useState(post.following);
+  const [popping, setPopping] = useState(false);
+  const [followPopping, setFollowPopping] = useState(false);
 
   function handleLike() {
     setLiked(!liked);
     setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+    setPopping(true);
   }
 
   function handleFollow() {
     setFollowing(!following);
+    setFollowPopping(true);
   }
 
   return (
@@ -48,7 +52,8 @@ export default function PostCard({ post }) {
 
             <button
               onClick={handleFollow}
-              className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0"
+              className={`flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0 ${followPopping ? 'animate-follow-pop' : ''}`}
+              onAnimationEnd={() => setFollowPopping(false)}
             >
               {following ? <UserCheck size={16} /> : <UserPlus size={16} />}
             </button>
@@ -71,7 +76,12 @@ export default function PostCard({ post }) {
               onClick={handleLike}
               className={`flex items-center gap-1.5 transition-colors ${liked ? 'text-[#EF4444]' : 'text-[#64748B] hover:text-[#EF4444]'}`}
             >
-              <Heart size={18} fill={liked ? '#EF4444' : 'none'} />
+              <Heart
+                size={18}
+                fill={liked ? '#EF4444' : 'none'}
+                className={popping ? 'animate-heart-pop' : ''}
+                onAnimationEnd={() => setPopping(false)}
+              />
               <span className="text-xs">{likesCount}</span>
             </button>
           </div>
