@@ -5,6 +5,9 @@ import MainLayout from '@/components/layout/MainLayout';
 import PostCard from '@/components/post/PostCard';
 import { usePosts } from '@/context/PostsContext';
 import { useAuth } from '@/context/AuthContext';
+import MainHeader from '@/components/layout/MainHeader';
+import { useLang } from '@/context/LanguageContext';
+
 
 function Avatar({ name }) {
   return (
@@ -17,7 +20,8 @@ function Avatar({ name }) {
 export default function HomePage() {
   const { posts, addPost } = usePosts();
   const { user } = useAuth();
-  const [content, setContent] = useState(''); // ← doit être ICI, avant le if
+  const [content, setContent] = useState(''); 
+  const { t } = useLang();
 
   if (!user) return null;
 
@@ -39,20 +43,17 @@ export default function HomePage() {
     setContent('');
   }
 
-  return (
+    return (
     <MainLayout>
+      <MainHeader title={t.home} />
       <div className="px-4 py-6">
-        <h1 className="text-xl font-bold text-[#0F172A] mb-6 hidden md:block">Page d&apos;accueil</h1>
-
-
-
         <div className="border border-[#E2E8F0] rounded-xl p-4 mb-6 flex gap-3">
           <Avatar name={user.name} />
           <div className="flex-1">
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Comment ça va ?"
+              placeholder={t.placeholder}
               maxLength={280}
               rows={3}
               className="w-full resize-none text-sm text-[#0F172A] placeholder-[#64748B] outline-none"
@@ -63,12 +64,11 @@ export default function HomePage() {
                 disabled={!content.trim()}
                 className="bg-[#3B82F6] hover:bg-[#2563EB] disabled:opacity-40 text-white text-sm font-medium px-4 py-1.5 rounded-full transition-colors"
               >
-                Publier
+                {t.publish}
               </button>
             </div>
           </div>
         </div>
-
         <div>
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
@@ -77,4 +77,5 @@ export default function HomePage() {
       </div>
     </MainLayout>
   );
+
 }

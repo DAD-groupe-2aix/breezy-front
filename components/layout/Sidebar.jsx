@@ -1,21 +1,22 @@
 'use client';
-
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Wind, Home, User, Bell, MessageCircle, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-
-const navItems = [
-  { label: "Page d'accueil", href: '/home', icon: Home },
-  { label: 'Profil', href: '/profile', icon: User },
-  { label: 'Notifications', href: '/notifications', icon: Bell },
-  { label: 'Messages', href: '/messages', icon: MessageCircle },
-];
+import { useLang } from '@/context/LanguageContext';
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { t } = useLang();
   const router = useRouter();
+
+  const navItems = [
+    { label: t.home, href: '/home', icon: Home },
+    { label: t.profile, href: '/profile', icon: User },
+    { label: t.notifications, href: '/notifications', icon: Bell },
+    { label: t.messages, href: '/messages', icon: MessageCircle },
+  ];
 
   function handleLogout() {
     logout();
