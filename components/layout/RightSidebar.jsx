@@ -27,6 +27,19 @@ export default function RightSidebar() {
           </Link>
         ))}
       </div>
+
+            <footer className="mt-auto pt-4">
+        <nav className="flex flex-wrap gap-x-2 gap-y-1">
+          <Link href="/legal/terms" className="text-[11px] text-[#64748B] hover:underline cursor-pointer">{t.terms}</Link>
+          <Link href="/legal/privacy" className="text-[11px] text-[#64748B] hover:underline cursor-pointer">{t.privacy}</Link>
+          <Link href="/legal/cookies" className="text-[11px] text-[#64748B] hover:underline cursor-pointer">{t.cookies}</Link>
+          <Link href="/legal/accessibility" className="text-[11px] text-[#64748B] hover:underline cursor-pointer">{t.accessibility}</Link>
+          <Link href="/legal/ads" className="text-[11px] text-[#64748B] hover:underline cursor-pointer">{t.ads}</Link>
+          <Link href="/legal/more" className="text-[11px] text-[#64748B] hover:underline cursor-pointer">{t.moreAbout}</Link>
+        </nav>
+        <p className="text-[11px] text-[#64748B] mt-2">© 2026 Breezy</p>
+      </footer>
+
     </aside>
   );
 }

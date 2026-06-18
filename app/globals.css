@@ -37,3 +37,6 @@ body {
 .dark .text-\[\#64748B\]          { color: #94A3B8 !important; }
 .dark .border-\[\#E2E8F0\]        { border-color: #334155 !important; }
 .dark .hover\:bg-\[\#F8FAFC\]:hover { background-color: #2d3748 !important; }
+.dark .text-\[\#334155\]            { color: #CBD5E1 !important; }
+.dark .bg-\[\#F1F5F9\]              { background-color: #2F3336 !important; }
+

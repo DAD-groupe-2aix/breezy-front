@@ -6,9 +6,11 @@ import MainLayout from '@/components/layout/MainLayout';
 import PostCard from '@/components/post/PostCard';
 import { mockPosts } from '@/mock/post';
 import { suggestedUsers } from '@/mock/user';
+import { useLang } from '@/context/LanguageContext';
 
 export default function UserProfilePage() {
     const { id } = useParams();
+    const { t } = useLang();
     const user = suggestedUsers.find((u) => u.id === id);
     const storageKey = `following_${id}`;
     const [following, setFollowing] = useState(() => {
@@ -57,12 +59,12 @@ export default function UserProfilePage() {
                         : 'bg-[#0F172A] text-white hover:bg-[#1E293B]'
                         }`}
                 >
-                    {following ? 'Ne plus suivre' : 'Suivre'}
+                    {following ? t.unfollow : t.follow}
                 </button>
 
                 <div>
                     {userPosts.length === 0 ? (
-                        <p className="text-center text-[#64748B] py-10">Aucun post de cet utilisateur.</p>
+                        <p className="text-center text-[#64748B] py-10">{t.noPost}</p>
                     ) : (
                         userPosts.map((post) => <PostCard key={post.id} post={post} />)
                     )}
