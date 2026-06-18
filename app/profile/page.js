@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import MainHeader from '@/components/layout/MainHeader';
@@ -107,12 +108,23 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {isEditing && createPortal(
-        <div
+      {createPortal(
+        <AnimatePresence>
+          {isEditing && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
           style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
           onClick={(e) => { if (e.target === e.currentTarget) setIsEditing(false); }}
         >
-          <div style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 440, margin: '0 16px' }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 12 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 440, margin: '0 16px' }}>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <span style={{ fontWeight: 700, fontSize: 18, color: '#0F172A' }}>{t.editProfile}</span>
@@ -193,8 +205,10 @@ export default function ProfilePage() {
                 {t.save}
               </button>
             </div>
-          </div>
-        </div>,
+          </motion.div>
+        </motion.div>
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </MainLayout>
