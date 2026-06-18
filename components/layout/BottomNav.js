@@ -37,7 +37,7 @@ export default function BottomNav() {
               href={href}
               className={`p-2 rounded-lg transition-colors ${isActive ? 'text-[#3B82F6]' : 'text-[#64748B] hover:text-[#0F172A]'}`}
             >
-              <Icon size={24} />
+              <Icon size={24} className={isActive ? 'animate-nav-bounce' : ''} />
             </Link>
           );
         })}
