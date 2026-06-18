@@ -15,6 +15,7 @@ export default function UserProfilePage() {
         if (typeof window === 'undefined') return false;
         return localStorage.getItem(storageKey) === 'true';
     });
+    const [popping, setPopping] = useState(false);
 
 
     if (!user) {
@@ -49,10 +50,11 @@ export default function UserProfilePage() {
                     onClick={() => {
                         const newValue = !following;
                         setFollowing(newValue);
+                        setPopping(true);
                         localStorage.setItem(storageKey, String(newValue));
                     }}
-
-                    className={`font-semibold px-5 py-2 rounded-full transition-colors mb-6 ${following
+                    onAnimationEnd={() => setPopping(false)}
+                    className={`font-semibold px-5 py-2 rounded-full transition-colors mb-6 ${popping ? 'animate-button-pop' : ''} ${following
                         ? 'border border-[#E2E8F0] text-[#0F172A] hover:border-[#EF4444] hover:text-[#EF4444]'
                         : 'bg-[#0F172A] text-white hover:bg-[#1E293B]'
                         }`}

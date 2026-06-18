@@ -21,6 +21,7 @@ export default function PostCard({ post }) {
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [following, setFollowing] = useState(post.following);
   const [popping, setPopping] = useState(false);
+  const [followPopping, setFollowPopping] = useState(false);
 
   function handleLike() {
     setLiked(!liked);
@@ -30,6 +31,7 @@ export default function PostCard({ post }) {
 
   function handleFollow() {
     setFollowing(!following);
+    setFollowPopping(true);
   }
 
   return (
@@ -50,7 +52,8 @@ export default function PostCard({ post }) {
 
             <button
               onClick={handleFollow}
-              className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0"
+              className={`flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0 ${followPopping ? 'animate-follow-pop' : ''}`}
+              onAnimationEnd={() => setFollowPopping(false)}
             >
               {following ? <UserCheck size={16} /> : <UserPlus size={16} />}
             </button>
