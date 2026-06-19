@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',//remplacer par adresse API
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
 });
 
 api.interceptors.request.use((config) => { //middleware axios, s'execute auto avant chaque requete
