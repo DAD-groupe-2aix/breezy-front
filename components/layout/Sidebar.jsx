@@ -25,10 +25,10 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar-left hidden md:flex w-60 shrink-0 bg-white border-r border-[#E2E8F0] px-4 py-6 flex-col sticky top-0 h-screen">
-      <div className="flex items-center gap-2 mb-8">
+      <Link href="/home" className="flex items-center gap-2 mb-8">
         <Wind size={28} className="text-[#3B82F6]" />
         <span className="text-xl font-bold text-[#0F172A]">Breezy</span>
-      </div>
+      </Link>
 
       <nav className="flex flex-col gap-1">
         {navItems.map(({ label, href, icon: Icon }) => {
