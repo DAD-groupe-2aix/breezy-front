@@ -7,6 +7,7 @@ import { usePosts } from '@/context/PostsContext';
 import { useAuth } from '@/context/AuthContext';
 import MainHeader from '@/components/layout/MainHeader';
 import { useLang } from '@/context/LanguageContext';
+import { postService } from '@/services/postService';
 
 
 function Avatar({ name }) {
@@ -28,19 +29,15 @@ export default function HomePage() {
 
 
 
-  function handlePublish() {
+  async function handlePublish() {
     if (!content.trim()) return;
-    addPost({
-      id: Date.now().toString(),
-      author: { id: user.id, name: user.name, username: user.username, avatar: null },
-      content: content.trim(),
-      likesCount: 0,
-      commentsCount: 0,
-      liked: false,
-      following: false,
-      createdAt: new Date().toISOString(),
-    });
-    setContent('');
+    try {
+      const newPost = await postService.createPost(user.id, content.trim());
+      addPost(newPost);
+      setContent('');
+    } catch {
+      // silently ignore for now
+    }
   }
 
     return (

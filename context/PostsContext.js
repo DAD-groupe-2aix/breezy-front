@@ -1,12 +1,16 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
-import { mockPosts } from '@/mock/post';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { postService } from '@/services/postService';
 
 const PostsContext = createContext(null);
 
 export function PostsProvider({ children }) {
-  const [posts, setPosts] = useState(mockPosts);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    postService.getFeed().then(setPosts).catch(() => setPosts([]));
+  }, []);
 
   function addPost(newPost) {
     setPosts((prev) => [newPost, ...prev]);

@@ -1,59 +1,46 @@
 import api from './api';
-import { mockPosts, mockComments } from '@/mock/post';
+
+function transformPost(p, currentUserId) {
+  return {
+    id: p._id,
+    author: { id: String(p.authId), name: `User ${p.authId}`, username: `user_${p.authId}`, avatar: null },
+    content: p.content,
+    likesCount: p.likes?.length ?? 0,
+    commentsCount: p.comments?.length ?? 0,
+    liked: p.likes?.includes(currentUserId) ?? false,
+    following: false,
+    createdAt: p.createdAt,
+  };
+}
 
 export const postService = {
-  async getFeed() {
-    // const { data } = await api.get('/posts/feed');
-    // return data;
-    return mockPosts;
+  async getFeed(currentUserId) {
+    const { data } = await api.get('/posts/');
+    return data.map((p) => transformPost(p, currentUserId));
   },
 
-  async createPost(content) {
-    // const { data } = await api.post('/posts', { content });
-    // return data;
-    return {
-      id: String(Date.now()),
-      author: { id: '1', name: 'Rayene Med', username: 'rayene', avatar: null },
-      content,
-      likesCount: 0,
-      commentsCount: 0,
-      liked: false,
-      following: false,
-      createdAt: new Date().toISOString(),
-    };
+  async createPost(authId, content) {
+    const { data } = await api.post('/posts/', { authId, content });
+    return transformPost(data.post, authId);
   },
 
-  async likePost(postId) {
-    // await api.post(`/posts/${postId}/like`);
-  },
-
-  async unlikePost(postId) {
-    // await api.delete(`/posts/${postId}/like`);
+  async likePost(postId, authId) {
+    await api.post(`/posts/${postId}/like`, { authId });
   },
 
   async getPost(postId) {
-    // const { data } = await api.get(`/posts/${postId}`);
-    // return data;
-    return mockPosts.find((p) => p.id === postId) || null;
+    const { data } = await api.get('/posts/');
+    return data.find((p) => p._id === postId) || null;
   },
 
   async getComments(postId) {
-    // const { data } = await api.get(`/posts/${postId}/comments`);
-    // return data;
-    return mockComments.filter((c) => c.postId === postId);
+    const { data } = await api.get('/posts/');
+    const post = data.find((p) => p._id === postId);
+    return post?.comments ?? [];
   },
 
-  async createComment(postId, content) {
-    // const { data } = await api.post(`/posts/${postId}/comments`, { content });
-    // return data;
-    return {
-      id: `c${Date.now()}`,
-      postId,
-      author: { id: '1', name: 'Rayene Med', username: 'rayene', avatar: null },
-      content,
-      likesCount: 0,
-      liked: false,
-      createdAt: new Date().toISOString(),
-    };
+  async createComment(postId, authId, text) {
+    const { data } = await api.post(`/posts/${postId}/comment`, { authId, text });
+    return data;
   },
 };
