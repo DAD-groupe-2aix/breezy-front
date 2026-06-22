@@ -1,31 +1,26 @@
 import api from './api';
-import { currentUser, suggestedUsers } from '@/mock/user';
-import { mockPosts } from '@/mock/post';
 
 export const userService = {
-  async getMyProfile() {
-    // const { data } = await api.get('/users/me');
-    // return data;
-    return currentUser;
+  async createProfile(authId, username) {
+    const { data } = await api.post('/users/profile', { authId, username });
+    return data.profile;
   },
 
-  async getProfile(userId) {
-    // const { data } = await api.get(`/users/${userId}`);
-    // return data;
-    return suggestedUsers.find((u) => u.id === userId) || null;
+  async getProfile(authId) {
+    const { data } = await api.get(`/users/profile/${authId}`);
+    return data;
   },
 
-  async getUserPosts(userId) {
-    // const { data } = await api.get(`/users/${userId}/posts`);
-    // return data;
-    return mockPosts.filter((p) => p.author.id === userId);
+  async updateProfile(authId, updates) {
+    const { data } = await api.put(`/users/profile/${authId}`, updates);
+    return data.profile;
   },
 
-  async followUser(userId) {
-    // await api.post(`/users/${userId}/follow`);
+  async followUser(targetId, authId) {
+    await api.post(`/users/profile/${targetId}/follow`, { authId });
   },
 
-  async unfollowUser(userId) {
-    // await api.delete(`/users/${userId}/follow`);
+  async unfollowUser(targetId, authId) {
+    await api.post(`/users/profile/${targetId}/unfollow`, { authId });
   },
 };

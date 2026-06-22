@@ -21,28 +21,34 @@ function Avatar({ name }) {
 export default function HomePage() {
   const { posts, addPost } = usePosts();
   const { user } = useAuth();
-  const [content, setContent] = useState(''); 
+  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
   const { t } = useLang();
 
   if (!user) return null;
 
-
-
-
   async function handlePublish() {
     if (!content.trim()) return;
+    setError('');
     try {
       const newPost = await postService.createPost(user.id, content.trim());
       addPost(newPost);
       setContent('');
-    } catch {
-      // silently ignore for now
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Erreur lors de la publication.');
     }
   }
 
-    return (
+
+  return (
     <MainLayout>
       <MainHeader title={t.home} />
+      {error && (
+        <p className="text-sm text-[#EF4444] bg-red-50 border border-red-200 rounded-lg px-3 py-2 mx-4 mt-4">
+          {error}
+        </p>
+      )}
+
       <div className="px-4 py-6">
         <div className="border border-[#E2E8F0] rounded-xl p-4 mb-6 flex gap-3">
           <Avatar name={user.name} />

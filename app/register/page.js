@@ -6,31 +6,39 @@ import Link from 'next/link';
 import { Wind } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/authService';
+import { userService } from '@/services/userService';
+
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const router = useRouter();
+  const [username, setUsername] = useState('');
 
-  async function handleSubmit(e) { //async avec try et catch pour attraper les erreurs et afficher un mess vu que les fonctions sont asynchrones (vraies appels reseaux)
+
+  async function handleSubmit(e) {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
       const { token, user } = await authService.register(email, password);
       login(user, token);
+      await userService.createProfile(user.id, username.trim());
       router.push('/home');
-    } catch {
-      setError('Erreur lors de la création du compte.');
+    } catch (err) {
+      logout();
+      setError(err?.response?.data?.message || 'Erreur lors de la création du compte.');
     } finally {
+
       setLoading(false);
     }
   }
 
-    return (
+
+  return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
 
       <div className="flex md:hidden items-center justify-center gap-2 pt-10 pb-4">
@@ -63,6 +71,19 @@ export default function RegisterPage() {
               className="border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#64748B] outline-none focus:border-[#3B82F6]"
             />
           </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-[#0F172A]">Nom d&apos;utilisateur</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="écrire ici"
+              required
+              className="border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#64748B] outline-none focus:border-[#3B82F6]"
+            />
+          </div>
+
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-[#0F172A]">Mot de passe</label>

@@ -1,9 +1,25 @@
 import api from './api';
+import { userService } from './userService';
 
-function transformPost(p, currentUserId) {
+const profileCache = new Map();
+
+async function getAuthorProfile(authId) {
+  if (profileCache.has(authId)) return profileCache.get(authId);
+  const profile = await userService.getProfile(authId).catch(() => null);
+  profileCache.set(authId, profile);
+  return profile;
+}
+
+async function transformPost(p, currentUserId) {
+  const profile = await getAuthorProfile(p.authId);
   return {
     id: p._id,
-    author: { id: String(p.authId), name: `User ${p.authId}`, username: `user_${p.authId}`, avatar: null },
+    author: {
+      id: p.authId,
+      name: profile?.username ?? `Utilisateur ${p.authId}`,
+      username: profile?.username ?? `user_${p.authId}`,
+      avatar: profile?.profilePicture ?? null,
+    },
     content: p.content,
     likesCount: p.likes?.length ?? 0,
     commentsCount: p.comments?.length ?? 0,
@@ -16,7 +32,12 @@ function transformPost(p, currentUserId) {
 export const postService = {
   async getFeed(currentUserId) {
     const { data } = await api.get('/posts/');
-    return data.map((p) => transformPost(p, currentUserId));
+    return Promise.all(data.map((p) => transformPost(p, currentUserId)));
+  },
+
+  async getUserPosts(authId, currentUserId) {
+    const { data } = await api.get(`/posts/user/${authId}`);
+    return Promise.all(data.map((p) => transformPost(p, currentUserId)));
   },
 
   async createPost(authId, content) {
