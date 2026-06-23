@@ -3,13 +3,17 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { MessageCircle, Repeat2, Heart, UserPlus, UserCheck } from 'lucide-react';
 
-function Avatar({ name }) {
+function Avatar({ name, avatar }) {
+  if (avatar) {
+    return <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover shrink-0" />;
+  }
   return (
     <div className="w-10 h-10 rounded-full bg-[#E2E8F0] flex items-center justify-center text-sm font-bold text-[#64748B] shrink-0">
       {name.charAt(0).toUpperCase()}
     </div>
   );
 }
+
 
 function formatDate(isoString) {
   const date = new Date(isoString);
@@ -37,7 +41,8 @@ export default function PostCard({ post }) {
   return (
     <article className="border-b border-[#E2E8F0] px-4 py-4 hover:bg-[#F8FAFC] transition-colors">
       <div className="flex gap-3">
-        <Avatar name={post.author.name} />
+        <Avatar name={post.author.name} avatar={post.author.avatar} />
+
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">

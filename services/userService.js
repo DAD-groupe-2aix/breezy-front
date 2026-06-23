@@ -24,3 +24,14 @@ export const userService = {
     await api.post(`/users/profile/${targetId}/unfollow`, { authId });
   },
 };
+
+export function toAuthFields(profile) {
+  return {
+    username: profile.username,
+    name: profile.username,
+    avatar: profile.profilePicture === 'default-avatar.png' ? null : profile.profilePicture,
+    bio: profile.bio,
+    followersCount: profile.followers?.length ?? 0,
+    followingCount: profile.following?.length ?? 0,
+  };
+}

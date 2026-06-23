@@ -10,13 +10,17 @@ import { useLang } from '@/context/LanguageContext';
 import { postService } from '@/services/postService';
 
 
-function Avatar({ name }) {
+function Avatar({ name, avatar }) {
+  if (avatar) {
+    return <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover shrink-0" />;
+  }
   return (
     <div className="w-10 h-10 rounded-full bg-[#E2E8F0] flex items-center justify-center text-sm font-bold text-[#64748B] shrink-0">
       {name.charAt(0).toUpperCase()}
     </div>
   );
 }
+
 
 export default function HomePage() {
   const { posts, addPost } = usePosts();
@@ -51,7 +55,8 @@ export default function HomePage() {
 
       <div className="px-4 py-6">
         <div className="border border-[#E2E8F0] rounded-xl p-4 mb-6 flex gap-3">
-          <Avatar name={user.name} />
+          <Avatar name={user.name} avatar={user.avatar} />
+
           <div className="flex-1">
             <textarea
               value={content}

@@ -18,7 +18,8 @@ async function transformPost(p, currentUserId) {
       id: p.authId,
       name: profile?.username ?? `Utilisateur ${p.authId}`,
       username: profile?.username ?? `user_${p.authId}`,
-      avatar: profile?.profilePicture ?? null,
+      avatar: profile?.profilePicture && profile.profilePicture !== 'default-avatar.png' ? profile.profilePicture : null,
+
     },
     content: p.content,
     likesCount: p.likes?.length ?? 0,

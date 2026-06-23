@@ -10,52 +10,64 @@ import PostCard from '@/components/post/PostCard';
 import { useAuth } from '@/context/AuthContext';
 import { usePosts } from '@/context/PostsContext';
 import { useLang } from '@/context/LanguageContext';
+import { userService } from '@/services/userService';
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuth();
   const { posts } = usePosts();
   const { t } = useLang();
 
-  const [avatarSrc, setAvatarSrc] = useState(() => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem(user ? `avatar_${user.id}` : '');
-  });
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editBio, setEditBio] = useState('');
   const [editBirthdate, setEditBirthdate] = useState('');
+  const [saveError, setSaveError] = useState('');
   const fileInputRef = useRef(null);
 
   if (!user) return null;
 
   const userPosts = posts.filter((p) => p.author.id === user.id);
-  const avatarKey = `avatar_${user.id}`;
 
   function handleFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const dataUrl = event.target.result;
-      localStorage.setItem(avatarKey, dataUrl);
-      setAvatarSrc(dataUrl);
+      try {
+        await userService.updateProfile(user.id, { profilePicture: dataUrl });
+        updateUser({ avatar: dataUrl });
+      } catch {
+        setSaveError('Erreur lors de la mise à jour de la photo.');
+      }
     };
     reader.readAsDataURL(file);
   }
 
-  function handleSave() {
-    updateUser({
-      name: editName.trim() || user.name,
+  async function handleSave() {
+    const updates = {
+      username: editName.trim() || user.username,
       bio: editBio.trim(),
-      birthdate: editBirthdate,
-    });
-    setIsEditing(false);
+    };
+    try {
+      await userService.updateProfile(user.id, updates);
+      updateUser({
+        name: updates.username,
+        username: updates.username,
+        bio: updates.bio,
+        birthdate: editBirthdate,
+      });
+      setIsEditing(false);
+    } catch (err) {
+      setSaveError(err?.response?.data?.message || 'Erreur lors de la mise à jour du profil.');
+    }
   }
 
   function openModal() {
-    setEditName(user.name);
+    setEditName(user.username || user.name);
     setEditBio(user.bio || '');
     setEditBirthdate(user.birthdate || '');
+    setSaveError('');
     setIsEditing(true);
   }
 
@@ -66,8 +78,8 @@ export default function ProfilePage() {
 
         <div className="border border-[#E2E8F0] rounded-xl p-6 mb-4 flex gap-4">
           <div className="shrink-0">
-            {avatarSrc ? (
-              <img src={avatarSrc} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
+            {user.avatar ? (
+              <img src={user.avatar} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
             ) : (
               <div className="w-16 h-16 rounded-full bg-[#E2E8F0] flex items-center justify-center text-xl font-bold text-[#64748B]">
                 {user.name.charAt(0).toUpperCase()}
@@ -133,13 +145,19 @@ export default function ProfilePage() {
               </button>
             </div>
 
+            {saveError && (
+              <p style={{ fontSize: 13, color: '#EF4444', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>
+                {saveError}
+              </p>
+            )}
+
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20 }}>
               <div
                 style={{ position: 'relative', cursor: 'pointer', width: 80, height: 80 }}
                 onClick={() => fileInputRef.current.click()}
               >
-                {avatarSrc ? (
-                  <img src={avatarSrc} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+                {user.avatar ? (
+                  <img src={user.avatar} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
                 ) : (
                   <div style={{ width: 80, height: 80, borderRadius: '50%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, color: '#64748B' }}>
                     {user.name.charAt(0).toUpperCase()}

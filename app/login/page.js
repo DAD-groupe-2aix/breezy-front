@@ -6,13 +6,15 @@ import Link from 'next/link';
 import { Wind } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/authService';
+import { userService, toAuthFields } from '@/services/userService';
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, updateUser } = useAuth();
   const router = useRouter();
 
   async function handleSubmit(e) {
@@ -22,6 +24,8 @@ export default function LoginPage() {
     try {
       const { token, user } = await authService.login(email, password);
       login(user, token);
+      const profile = await userService.getProfile(user.id);
+      updateUser(toAuthFields(profile));
       router.push('/home');
     } catch {
       setError('Email ou mot de passe incorrect.');
@@ -30,7 +34,7 @@ export default function LoginPage() {
     }
   }
 
-    return (
+  return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
 
       {/* Logo visible uniquement sur mobile, en haut du formulaire */}
@@ -96,5 +100,5 @@ export default function LoginPage() {
     </div>
   );
 
-  
+
 }

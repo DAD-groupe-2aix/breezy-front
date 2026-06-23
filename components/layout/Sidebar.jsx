@@ -48,10 +48,15 @@ export default function Sidebar() {
       {user && (
         <div className="mt-auto flex items-center justify-between gap-2 pt-4 border-t border-[#E2E8F0]">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-[#E2E8F0] flex items-center justify-center text-xs font-bold text-[#64748B] shrink-0">
-              {user.name.charAt(0).toUpperCase()}
-            </div>
+            {user.avatar ? (
+              <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-[#E2E8F0] flex items-center justify-center text-xs font-bold text-[#64748B] shrink-0">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="min-w-0">
+
               <p className="text-sm font-medium text-[#0F172A] truncate">{user.name}</p>
               <p className="text-xs text-[#64748B] truncate">@{user.username}</p>
             </div>

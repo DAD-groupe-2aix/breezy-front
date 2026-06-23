@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Wind } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/authService';
-import { userService } from '@/services/userService';
+import { userService, toAuthFields } from '@/services/userService';
 
 
 export default function RegisterPage() {
@@ -14,7 +14,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, logout } = useAuth();
+  const { login, logout, updateUser } = useAuth();
   const router = useRouter();
   const [username, setUsername] = useState('');
 
@@ -26,7 +26,8 @@ export default function RegisterPage() {
     try {
       const { token, user } = await authService.register(email, password);
       login(user, token);
-      await userService.createProfile(user.id, username.trim());
+      const profile = await userService.createProfile(user.id, username.trim());
+      updateUser(toAuthFields(profile));
       router.push('/home');
     } catch (err) {
       logout();
