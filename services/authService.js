@@ -5,7 +5,7 @@ export const authService = {
     const { data } = await api.post('/auth/login', { email, password });
     return {
       token: data.token,
-      user: { id: data.userId, email: data.email, name: data.email.split('@')[0] },
+      user: { id: data.userId, email: data.email, name: data.email.split('@')[0], role: data.role },
     };
   },
 
@@ -13,7 +13,7 @@ export const authService = {
     const { data } = await api.post('/auth/register', { email, password });
     return {
       token: data.token,
-      user: { id: data.userId, email: data.email, name: data.email.split('@')[0] },
+      user: { id: data.userId, email: data.email, name: data.email.split('@')[0], role: data.role },
     };
   },
 };
