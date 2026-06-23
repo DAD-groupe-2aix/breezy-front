@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { MessageCircle, Repeat2, Heart, UserPlus, UserCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { userService } from '@/services/userService';
+import { postService } from '@/services/postService';
+
 
 function Avatar({ name, avatar }) {
   if (avatar) {
@@ -29,11 +31,20 @@ export default function PostCard({ post }) {
   const [popping, setPopping] = useState(false);
   const [followPopping, setFollowPopping] = useState(false);
 
-  function handleLike() {
-    setLiked(!liked);
-    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+  async function handleLike() {
+    const wasLiked = liked;
+    const prevCount = likesCount;
+    setLiked(!wasLiked);
+    setLikesCount(wasLiked ? prevCount - 1 : prevCount + 1);
     setPopping(true);
+    try {
+      await postService.likePost(post.id, user.id);
+    } catch {
+      setLiked(wasLiked);
+      setLikesCount(prevCount);
+    }
   }
+
 
   async function handleFollow() {
     const next = !following;
