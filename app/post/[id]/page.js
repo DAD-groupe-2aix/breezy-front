@@ -38,7 +38,8 @@ export default function PostDetailPage() {
     setLoading(true);
     Promise.all([
       postService.getPost(id, user.id),
-      postService.getComments(id),
+      postService.getComments(id, user.id),
+
     ])
       .then(([postData, commentsData]) => {
         setPost(postData);
@@ -54,7 +55,7 @@ export default function PostDetailPage() {
       setComments([...comments, newComment]);
       setReply('');
     } catch {
-      
+
     }
   }
 
@@ -134,8 +135,9 @@ export default function PostDetailPage() {
             <p className="text-center text-[#64748B] py-10">Aucun commentaire pour l&apos;instant.</p>
           ) : (
             comments.map((comment) => (
-              <CommentCard key={comment.id} comment={comment} />
+              <CommentCard key={comment.id} comment={comment} postId={id} />
             ))
+
           )}
         </div>
 

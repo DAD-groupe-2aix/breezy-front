@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { postService } from '@/services/postService';
 
 function Avatar({ name, avatar }) {
   if (avatar) {
@@ -15,25 +17,32 @@ function Avatar({ name, avatar }) {
   );
 }
 
-
 function formatDate(isoString) {
   const date = new Date(isoString);
   return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 }
 
-export default function CommentCard({ comment }) {
+export default function CommentCard({ comment, postId }) {
+  const { user } = useAuth();
   const [liked, setLiked] = useState(comment.liked);
   const [likesCount, setLikesCount] = useState(comment.likesCount);
 
-  function handleLike() {
-    setLiked(!liked);
-    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+  async function handleLike() {
+    const wasLiked = liked;
+    const prevCount = likesCount;
+    setLiked(!wasLiked);
+    setLikesCount(wasLiked ? prevCount - 1 : prevCount + 1);
+    try {
+      await postService.likeComment(postId, comment.id, user.id);
+    } catch {
+      setLiked(wasLiked);
+      setLikesCount(prevCount);
+    }
   }
 
   return (
     <div className="border-b border-[#E2E8F0] px-4 py-3 flex gap-3">
       <Avatar name={comment.author.name} avatar={comment.author.avatar} />
-
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Link href={`/profile/${comment.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">

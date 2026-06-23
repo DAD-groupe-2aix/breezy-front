@@ -32,7 +32,7 @@ async function transformPost(p, currentUserId) {
   };
 }
 
-async function transformComment(c, postId) {
+async function transformComment(c, postId, currentUserId) {
   const profile = await getAuthorProfile(c.authId);
   return {
     id: c._id,
@@ -44,11 +44,13 @@ async function transformComment(c, postId) {
       avatar: profile?.profilePicture && profile.profilePicture !== 'default-avatar.png' ? profile.profilePicture : null,
     },
     content: c.text,
-    likesCount: 0,
-    liked: false,
+    likesCount: c.likes?.length ?? 0,
+    liked: c.likes?.includes(currentUserId) ?? false,
     createdAt: c.createdAt,
   };
 }
+
+
 
 export const postService = {
   async getFeed(currentUserId) {
@@ -77,17 +79,22 @@ export const postService = {
     return transformPost(post, currentUserId);
   },
 
-  async getComments(postId) {
+  async getComments(postId, currentUserId) {
     const { data } = await api.get('/posts/');
     const post = data.find((p) => p._id === postId);
     if (!post) return [];
-    return Promise.all((post.comments ?? []).map((c) => transformComment(c, postId)));
+    return Promise.all((post.comments ?? []).map((c) => transformComment(c, postId, currentUserId)));
   },
 
   async createComment(postId, authId, text) {
     const { data } = await api.post(`/posts/${postId}/comment`, { authId, text });
     const comments = data.post.comments;
     const newComment = comments[comments.length - 1];
-    return transformComment(newComment, postId);
+    return transformComment(newComment, postId, authId);
   },
+
+  async likeComment(postId, commentId, authId) {
+    await api.post(`/posts/${postId}/comments/${commentId}/like`, { authId });
+  },
+
 };
