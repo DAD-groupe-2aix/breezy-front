@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { MessageCircle, Repeat2, Heart, UserPlus, UserCheck } from 'lucide-react';
+import { MessageCircle, Heart, UserPlus, UserCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { userService } from '@/services/userService';
 import { postService } from '@/services/postService';
@@ -96,9 +96,6 @@ export default function PostCard({ post }) {
               <span className="text-xs">{post.commentsCount}</span>
             </Link>
 
-            <button className="flex items-center gap-1.5 text-[#64748B] hover:text-[#22C55E] transition-colors">
-              <Repeat2 size={18} />
-            </button>
 
             <button
               onClick={handleLike}
