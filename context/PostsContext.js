@@ -2,15 +2,18 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { postService } from '@/services/postService';
+import { useAuth } from './AuthContext';
 
 const PostsContext = createContext(null);
 
 export function PostsProvider({ children }) {
+  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    postService.getFeed().then(setPosts).catch(() => setPosts([]));
-  }, []);
+    if (!user) return;
+    postService.getFeed(user.id).then(setPosts).catch(() => setPosts([]));
+  }, [user]);
 
   function addPost(newPost) {
     setPosts((prev) => [newPost, ...prev]);

@@ -11,7 +11,10 @@ async function getAuthorProfile(authId) {
 }
 
 async function transformPost(p, currentUserId) {
-  const profile = await getAuthorProfile(p.authId);
+  const [profile, myProfile] = await Promise.all([
+    getAuthorProfile(p.authId),
+    getAuthorProfile(currentUserId),
+  ]);
   return {
     id: p._id,
     author: {
@@ -19,16 +22,16 @@ async function transformPost(p, currentUserId) {
       name: profile?.username ?? `Utilisateur ${p.authId}`,
       username: profile?.username ?? `user_${p.authId}`,
       avatar: profile?.profilePicture && profile.profilePicture !== 'default-avatar.png' ? profile.profilePicture : null,
-
     },
     content: p.content,
     likesCount: p.likes?.length ?? 0,
     commentsCount: p.comments?.length ?? 0,
     liked: p.likes?.includes(currentUserId) ?? false,
-    following: false,
+    following: myProfile?.following?.includes(p.authId) ?? false,
     createdAt: p.createdAt,
   };
 }
+
 
 export const postService = {
   async getFeed(currentUserId) {

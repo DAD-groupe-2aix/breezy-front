@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { MessageCircle, Repeat2, Heart, UserPlus, UserCheck } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { userService } from '@/services/userService';
 
 function Avatar({ name, avatar }) {
   if (avatar) {
@@ -14,13 +16,13 @@ function Avatar({ name, avatar }) {
   );
 }
 
-
 function formatDate(isoString) {
   const date = new Date(isoString);
   return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 }
 
 export default function PostCard({ post }) {
+  const { user } = useAuth();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [following, setFollowing] = useState(post.following);
@@ -33,16 +35,25 @@ export default function PostCard({ post }) {
     setPopping(true);
   }
 
-  function handleFollow() {
-    setFollowing(!following);
+  async function handleFollow() {
+    const next = !following;
+    setFollowing(next);
     setFollowPopping(true);
+    try {
+      if (next) {
+        await userService.followUser(post.author.id, user.id);
+      } else {
+        await userService.unfollowUser(post.author.id, user.id);
+      }
+    } catch {
+      setFollowing(!next);
+    }
   }
 
   return (
     <article className="border-b border-[#E2E8F0] px-4 py-4 hover:bg-[#F8FAFC] transition-colors">
       <div className="flex gap-3">
         <Avatar name={post.author.name} avatar={post.author.avatar} />
-
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
@@ -55,13 +66,15 @@ export default function PostCard({ post }) {
               <span className="text-sm text-[#64748B]">· {formatDate(post.createdAt)}</span>
             </div>
 
-            <button
-              onClick={handleFollow}
-              className={`flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0 ${followPopping ? 'animate-follow-pop' : ''}`}
-              onAnimationEnd={() => setFollowPopping(false)}
-            >
-              {following ? <UserCheck size={16} /> : <UserPlus size={16} />}
-            </button>
+            {post.author.id !== user.id && (
+              <button
+                onClick={handleFollow}
+                className={`flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0 ${followPopping ? 'animate-follow-pop' : ''}`}
+                onAnimationEnd={() => setFollowPopping(false)}
+              >
+                {following ? <UserCheck size={16} /> : <UserPlus size={16} />}
+              </button>
+            )}
           </div>
 
           <p className="mt-1 text-sm text-[#0F172A] leading-relaxed">{post.content}</p>
@@ -71,7 +84,6 @@ export default function PostCard({ post }) {
               <MessageCircle size={18} />
               <span className="text-xs">{post.commentsCount}</span>
             </Link>
-
 
             <button className="flex items-center gap-1.5 text-[#64748B] hover:text-[#22C55E] transition-colors">
               <Repeat2 size={18} />
