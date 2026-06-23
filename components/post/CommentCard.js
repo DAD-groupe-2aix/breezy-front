@@ -4,13 +4,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 
-function Avatar({ name }) {
+function Avatar({ name, avatar }) {
+  if (avatar) {
+    return <img src={avatar} alt={name} className="w-9 h-9 rounded-full object-cover shrink-0" />;
+  }
   return (
     <div className="w-9 h-9 rounded-full bg-[#E2E8F0] flex items-center justify-center text-sm font-bold text-[#64748B] shrink-0">
       {name.charAt(0).toUpperCase()}
     </div>
   );
 }
+
 
 function formatDate(isoString) {
   const date = new Date(isoString);
@@ -28,7 +32,8 @@ export default function CommentCard({ comment }) {
 
   return (
     <div className="border-b border-[#E2E8F0] px-4 py-3 flex gap-3">
-      <Avatar name={comment.author.name} />
+      <Avatar name={comment.author.name} avatar={comment.author.avatar} />
+
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <Link href={`/profile/${comment.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">

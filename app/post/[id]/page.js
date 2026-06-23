@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import CommentCard from '@/components/post/CommentCard';
-import { mockPosts, mockComments } from '@/mock/post';
-import { currentUser } from '@/mock/user';
+import { useAuth } from '@/context/AuthContext';
+import { postService } from '@/services/postService';
 
-function Avatar({ name }) {
+function Avatar({ name, avatar }) {
+  if (avatar) {
+    return <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover shrink-0" />;
+  }
   return (
     <div className="w-10 h-10 rounded-full bg-[#E2E8F0] flex items-center justify-center text-sm font-bold text-[#64748B] shrink-0">
       {name.charAt(0).toUpperCase()}
@@ -24,11 +27,46 @@ function formatDate(isoString) {
 
 export default function PostDetailPage() {
   const { id } = useParams();
-  const post = mockPosts.find((p) => p.id === id);
-  const [comments, setComments] = useState(
-    mockComments.filter((c) => c.postId === id)
-  );
+  const { user } = useAuth();
+  const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [reply, setReply] = useState('');
+
+  useEffect(() => {
+    if (!user) return;
+    setLoading(true);
+    Promise.all([
+      postService.getPost(id, user.id),
+      postService.getComments(id),
+    ])
+      .then(([postData, commentsData]) => {
+        setPost(postData);
+        setComments(commentsData);
+      })
+      .finally(() => setLoading(false));
+  }, [id, user]);
+
+  async function handlePublishReply() {
+    if (!reply.trim()) return;
+    try {
+      const newComment = await postService.createComment(id, user.id, reply.trim());
+      setComments([...comments, newComment]);
+      setReply('');
+    } catch {
+      
+    }
+  }
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="px-4 py-6">
+          <p className="text-[#64748B]">Chargement...</p>
+        </div>
+      </MainLayout>
+    );
+  }
 
   if (!post) {
     return (
@@ -40,35 +78,18 @@ export default function PostDetailPage() {
     );
   }
 
-  function handlePublishReply() {
-    if (!reply.trim()) return;
-    const newComment = {
-      id: `c${Date.now()}`,
-      postId: id,
-      author: currentUser,
-      content: reply.trim(),
-      likesCount: 0,
-      liked: false,
-      createdAt: new Date().toISOString(),
-    };
-    setComments([...comments, newComment]);
-    setReply('');
-  }
-
   return (
     <MainLayout>
       <div className="px-4 py-6">
 
-        {/* Bouton retour */}
         <Link href="/home" className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#0F172A] mb-6 transition-colors">
           <ArrowLeft size={18} />
           Retour
         </Link>
 
-        {/* Post original */}
         <div className="border border-[#E2E8F0] rounded-xl p-5 mb-6">
           <div className="flex gap-3">
-            <Avatar name={post.author.name} />
+            <Avatar name={post.author.name} avatar={post.author.avatar} />
             <div>
               <Link href={`/profile/${post.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
                 {post.author.name}
@@ -79,14 +100,13 @@ export default function PostDetailPage() {
           </div>
           <p className="mt-3 text-[#0F172A] leading-relaxed">{post.content}</p>
           <p className="mt-3 text-sm text-[#64748B]">
-            <span className="font-semibold text-[#0F172A]">{post.commentsCount}</span> commentaires ·{' '}
+            <span className="font-semibold text-[#0F172A]">{comments.length}</span> commentaires ·{' '}
             <span className="font-semibold text-[#0F172A]">{post.likesCount}</span> likes
           </p>
         </div>
 
-        {/* Zone de réponse */}
         <div className="border border-[#E2E8F0] rounded-xl p-4 mb-6 flex gap-3">
-          <Avatar name={currentUser.name} />
+          <Avatar name={user.name} avatar={user.avatar} />
           <div className="flex-1">
             <p className="text-xs text-[#64748B] mb-1">Votre réponse :</p>
             <textarea
@@ -109,10 +129,9 @@ export default function PostDetailPage() {
           </div>
         </div>
 
-        {/* Liste des commentaires */}
         <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
           {comments.length === 0 ? (
-            <p className="text-center text-[#64748B] py-10">Aucun commentaire pour l'instant.</p>
+            <p className="text-center text-[#64748B] py-10">Aucun commentaire pour l&apos;instant.</p>
           ) : (
             comments.map((comment) => (
               <CommentCard key={comment.id} comment={comment} />
