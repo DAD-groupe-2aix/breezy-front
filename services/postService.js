@@ -24,6 +24,7 @@ async function transformPost(p, currentUserId) {
       avatar: profile?.profilePicture && profile.profilePicture !== 'default-avatar.png' ? profile.profilePicture : null,
     },
     content: p.content,
+    editedAt: p.editedAt ?? null,
     likesCount: p.likes?.length ?? 0,
     commentsCount: p.comments?.length ?? 0,
     liked: p.likes?.includes(currentUserId) ?? false,
@@ -99,5 +100,10 @@ export const postService = {
 
   async deletePost(postId) {
     await api.delete(`/posts/${postId}`);
+  },
+
+  async editPost(postId, content) {
+    const { data } = await api.put(`/posts/${postId}`, { content });
+    return data.post;
   },
 };
