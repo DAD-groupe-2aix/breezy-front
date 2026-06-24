@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
-import { MessageCircle, Heart, UserPlus, UserCheck } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { MessageCircle, Heart, UserPlus, UserCheck, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePosts } from '@/context/PostsContext';
 import { userService } from '@/services/userService';
@@ -25,12 +25,23 @@ function formatDate(isoString) {
 
 export default function PostCard({ post }) {
   const { user, updateUser } = useAuth();
-  const { updatePost } = usePosts();
+  const { updatePost, removePost } = usePosts();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [following, setFollowing] = useState(post.following);
   const [popping, setPopping] = useState(false);
   const [followPopping, setFollowPopping] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpen]);
 
   async function handleLike() {
     const wasLiked = liked;
@@ -46,6 +57,15 @@ export default function PostCard({ post }) {
     } catch {
       setLiked(wasLiked);
       setLikesCount(prevCount);
+    }
+  }
+
+  async function handleDelete() {
+    setMenuOpen(false);
+    try {
+      await postService.deletePost(post.id);
+      removePost(post.id);
+    } catch {
     }
   }
 
@@ -82,7 +102,7 @@ export default function PostCard({ post }) {
               <span className="text-sm text-[#64748B]">· {formatDate(post.createdAt)}</span>
             </div>
 
-            {post.author.id !== user.id && (
+            {post.author.id !== user.id ? (
               <button
                 onClick={handleFollow}
                 className={`flex items-center gap-1 text-xs text-[#64748B] hover:text-[#3B82F6] transition-colors shrink-0 ${followPopping ? 'animate-follow-pop' : ''}`}
@@ -90,6 +110,26 @@ export default function PostCard({ post }) {
               >
                 {following ? <UserCheck size={16} /> : <UserPlus size={16} />}
               </button>
+            ) : (
+              <div className="relative shrink-0" ref={menuRef}>
+                <button
+                  onClick={() => setMenuOpen((o) => !o)}
+                  className="text-[#64748B] hover:text-[#0F172A] p-1 rounded transition-colors"
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-0 top-7 bg-white border border-[#E2E8F0] rounded-xl shadow-lg py-1 z-10 min-w-[140px]">
+                    <button
+                      onClick={handleDelete}
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-[#EF4444] hover:bg-[#FEF2F2] transition-colors"
+                    >
+                      <Trash2 size={15} />
+                      Supprimer
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
