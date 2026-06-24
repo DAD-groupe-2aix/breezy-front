@@ -8,16 +8,24 @@ import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/authService';
 import { userService, toAuthFields } from '@/services/userService';
 
-
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+  const [photo, setPhoto] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, logout, updateUser } = useAuth();
   const router = useRouter();
-  const [username, setUsername] = useState('');
 
+  function handlePhotoChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => setPhoto(event.target.result);
+    reader.readAsDataURL(file);
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,18 +34,19 @@ export default function RegisterPage() {
     try {
       const { token, user } = await authService.register(email, password);
       login(user, token);
-      const profile = await userService.createProfile(user.id, username.trim());
+      const extra = {};
+      if (birthdate) extra.birthdate = birthdate;
+      if (photo) extra.profilePicture = photo;
+      const profile = await userService.createProfile(user.id, username.trim(), extra);
       updateUser(toAuthFields(profile));
       router.push('/home');
     } catch (err) {
       logout();
       setError(err?.response?.data?.message || 'Erreur lors de la création du compte.');
     } finally {
-
       setLoading(false);
     }
   }
-
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col md:flex-row">
@@ -60,6 +69,21 @@ export default function RegisterPage() {
               {error}
             </p>
           )}
+
+          <div className="flex flex-col items-center gap-2">
+            <div
+              className="w-16 h-16 rounded-full bg-[#E2E8F0] flex items-center justify-center text-[#64748B] overflow-hidden cursor-pointer"
+              onClick={() => document.getElementById('register-photo-input').click()}
+            >
+              {photo ? (
+                <img src={photo} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
+              ) : (
+                <span className="text-xs">Photo</span>
+              )}
+            </div>
+            <input id="register-photo-input" type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+            <span className="text-xs text-[#64748B]">Photo de profil (optionnel)</span>
+          </div>
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-[#0F172A]">Courriel</label>
@@ -85,7 +109,6 @@ export default function RegisterPage() {
             />
           </div>
 
-
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-[#0F172A]">Mot de passe</label>
             <input
@@ -95,6 +118,16 @@ export default function RegisterPage() {
               placeholder="écrire ici"
               required
               className="border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] placeholder-[#64748B] outline-none focus:border-[#3B82F6]"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-[#0F172A]">Date de naissance</label>
+            <input
+              type="date"
+              value={birthdate}
+              onChange={(e) => setBirthdate(e.target.value)}
+              className="border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] outline-none focus:border-[#3B82F6]"
             />
           </div>
 
@@ -114,5 +147,4 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-
 }

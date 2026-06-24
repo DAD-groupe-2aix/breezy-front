@@ -1,10 +1,11 @@
 import api from './api';
 
 export const userService = {
-  async createProfile(authId, username) {
-    const { data } = await api.post('/users/profile', { authId, username });
+  async createProfile(authId, username, extra = {}) {
+    const { data } = await api.post('/users/profile', { authId, username, ...extra });
     return data.profile;
   },
+
 
   async getProfile(authId) {
     const { data } = await api.get(`/users/profile/${authId}`);
@@ -40,7 +41,9 @@ export function toAuthFields(profile) {
     name: profile.username,
     avatar: profile.profilePicture === 'default-avatar.png' ? null : profile.profilePicture,
     bio: profile.bio,
+    birthdate: profile.birthdate ? profile.birthdate.slice(0, 10) : null,
     followersCount: profile.followers?.length ?? 0,
     followingCount: profile.following?.length ?? 0,
   };
 }
+

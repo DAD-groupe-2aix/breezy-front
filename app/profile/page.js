@@ -53,6 +53,7 @@ export default function ProfilePage() {
     const updates = {
       username: editName.trim() || user.username,
       bio: editBio.trim(),
+      birthdate: editBirthdate || undefined,
     };
     try {
       await userService.updateProfile(user.id, updates);
@@ -64,9 +65,10 @@ export default function ProfilePage() {
       });
       setIsEditing(false);
     } catch (err) {
-      setSaveError(t.profileUpdateError);
+      setSaveError(err?.response?.data?.message || t.profileUpdateError);
     }
   }
+
 
   function openModal() {
     setEditName(user.username || user.name);
