@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Heart, UserPlus, UserCheck, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePosts } from '@/context/PostsContext';
+import { useLang } from '@/context/LanguageContext';
 import { userService } from '@/services/userService';
 import { postService } from '@/services/postService';
 
@@ -26,6 +27,7 @@ function formatDate(isoString) {
 export default function PostCard({ post }) {
   const { user, updateUser } = useAuth();
   const { updatePost, removePost } = usePosts();
+  const { t } = useLang();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [following, setFollowing] = useState(post.following);
@@ -125,7 +127,7 @@ export default function PostCard({ post }) {
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-[#EF4444] hover:bg-[#FEF2F2] transition-colors"
                     >
                       <Trash2 size={15} />
-                      Supprimer
+                      {t.deletePost}
                     </button>
                   </div>
                 )}
