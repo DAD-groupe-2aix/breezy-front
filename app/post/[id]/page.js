@@ -97,7 +97,7 @@ export default function PostDetailPage() {
           <div className="flex gap-3">
             <Avatar name={post.author.name} avatar={post.author.avatar} />
             <div>
-              <Link href={`/profile/${post.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
+              <Link href={post.author.id === user.id ? '/profile' : `/profile/${post.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
                 {post.author.name}
               </Link>
               <span className="text-sm text-[#64748B] ml-2">@{post.author.username}</span>

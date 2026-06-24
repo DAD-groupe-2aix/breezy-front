@@ -74,7 +74,7 @@ export default function PostCard({ post }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <Link href={`/profile/${post.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
+              <Link href={post.author.id === user.id ? '/profile' : `/profile/${post.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
                 {post.author.name}
               </Link>
               <span className="text-sm text-[#64748B]">@{post.author.username}</span>
