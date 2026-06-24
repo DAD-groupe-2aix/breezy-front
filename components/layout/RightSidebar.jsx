@@ -38,7 +38,8 @@ export default function RightSidebar() {
       <h2 className="font-bold text-[#0F172A] mb-4">{t.following}</h2>
       <div className="flex flex-col gap-3">
         {following.length === 0 ? (
-          <p className="text-sm text-[#64748B]">Tu ne suis personne pour l&apos;instant.</p>
+          <p className="text-sm text-[#64748B]">{t.followingEmpty}</p>
+
         ) : (
           following.map((profile) => (
             <Link key={profile.authId} href={`/profile/${profile.authId}`} className="flex items-center gap-3 hover:bg-[#F8FAFC] rounded-lg p-1 transition-colors">

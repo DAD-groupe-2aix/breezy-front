@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import CommentCard from '@/components/post/CommentCard';
 import { useAuth } from '@/context/AuthContext';
+import { useLang } from '@/context/LanguageContext';
 import { postService } from '@/services/postService';
 
 function Avatar({ name, avatar }) {
@@ -28,6 +29,7 @@ function formatDate(isoString) {
 export default function PostDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { t } = useLang();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,6 @@ export default function PostDetailPage() {
     Promise.all([
       postService.getPost(id, user.id),
       postService.getComments(id, user.id),
-
     ])
       .then(([postData, commentsData]) => {
         setPost(postData);
@@ -55,7 +56,7 @@ export default function PostDetailPage() {
       setComments([...comments, newComment]);
       setReply('');
     } catch {
-
+      // ignoré pour l'instant
     }
   }
 
@@ -63,7 +64,7 @@ export default function PostDetailPage() {
     return (
       <MainLayout>
         <div className="px-4 py-6">
-          <p className="text-[#64748B]">Chargement...</p>
+          <p className="text-[#64748B]">{t.loading}</p>
         </div>
       </MainLayout>
     );
@@ -73,7 +74,7 @@ export default function PostDetailPage() {
     return (
       <MainLayout>
         <div className="px-4 py-6">
-          <p className="text-[#64748B]">Post introuvable.</p>
+          <p className="text-[#64748B]">{t.postNotFound}</p>
         </div>
       </MainLayout>
     );
@@ -85,7 +86,7 @@ export default function PostDetailPage() {
 
         <Link href="/home" className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#0F172A] mb-6 transition-colors">
           <ArrowLeft size={18} />
-          Retour
+          {t.back}
         </Link>
 
         <div className="border border-[#E2E8F0] rounded-xl p-5 mb-6">
@@ -101,19 +102,19 @@ export default function PostDetailPage() {
           </div>
           <p className="mt-3 text-[#0F172A] leading-relaxed">{post.content}</p>
           <p className="mt-3 text-sm text-[#64748B]">
-            <span className="font-semibold text-[#0F172A]">{comments.length}</span> commentaires ·{' '}
-            <span className="font-semibold text-[#0F172A]">{post.likesCount}</span> likes
+            <span className="font-semibold text-[#0F172A]">{comments.length}</span> {t.commentsLabel} ·{' '}
+            <span className="font-semibold text-[#0F172A]">{post.likesCount}</span> {t.likesLabel}
           </p>
         </div>
 
         <div className="border border-[#E2E8F0] rounded-xl p-4 mb-6 flex gap-3">
           <Avatar name={user.name} avatar={user.avatar} />
           <div className="flex-1">
-            <p className="text-xs text-[#64748B] mb-1">Votre réponse :</p>
+            <p className="text-xs text-[#64748B] mb-1">{t.yourReply}</p>
             <textarea
               value={reply}
               onChange={(e) => setReply(e.target.value)}
-              placeholder="écrire ici"
+              placeholder={t.writeHere}
               maxLength={280}
               rows={3}
               className="w-full resize-none text-sm text-[#0F172A] placeholder-[#64748B] outline-none"
@@ -124,7 +125,7 @@ export default function PostDetailPage() {
                 disabled={!reply.trim()}
                 className="bg-[#3B82F6] hover:bg-[#2563EB] disabled:opacity-40 text-white text-sm font-medium px-4 py-1.5 rounded-full transition-colors"
               >
-                Publier
+                {t.publish}
               </button>
             </div>
           </div>
@@ -132,12 +133,11 @@ export default function PostDetailPage() {
 
         <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
           {comments.length === 0 ? (
-            <p className="text-center text-[#64748B] py-10">Aucun commentaire pour l&apos;instant.</p>
+            <p className="text-center text-[#64748B] py-10">{t.noComment}</p>
           ) : (
             comments.map((comment) => (
               <CommentCard key={comment.id} comment={comment} postId={id} />
             ))
-
           )}
         </div>
 

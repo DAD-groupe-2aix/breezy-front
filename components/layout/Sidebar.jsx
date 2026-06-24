@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Wind, Home, User, Bell, MessageCircle, LogOut } from 'lucide-react';
+import { Wind, Home, User, Bell, MessageCircle, LogOut, Shield } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLang } from '@/context/LanguageContext';
 
@@ -11,11 +11,14 @@ export default function Sidebar() {
   const { t } = useLang();
   const router = useRouter();
 
-  const navItems = [
+    const navItems = [
     { label: t.home, href: '/home', icon: Home },
     { label: t.profile, href: '/profile', icon: User },
     { label: t.notifications, href: '/notifications', icon: Bell },
     { label: t.messages, href: '/messages', icon: MessageCircle },
+    ...(user && (user.role === 'admin' || user.role === 'moderator')
+      ? [{ label: 'Administration', href: '/admin', icon: Shield }]
+      : []),
   ];
 
   function handleLogout() {

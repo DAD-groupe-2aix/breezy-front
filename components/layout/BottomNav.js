@@ -2,18 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, User, Bell, MessageCircle, Settings2 } from 'lucide-react';
-
-const navItems = [
-  { href: '/home', icon: Home },
-  { href: '/profile', icon: User },
-  { href: '/notifications', icon: Bell },
-  { href: '/messages', icon: MessageCircle },
-  { href: '/settings', icon: Settings2 },
-];
+import { Home, User, Bell, MessageCircle, Settings2, Shield } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  const navItems = [
+    { href: '/home', icon: Home },
+    { href: '/profile', icon: User },
+    { href: '/notifications', icon: Bell },
+    { href: '/messages', icon: MessageCircle },
+    { href: '/settings', icon: Settings2 },
+    ...(user && (user.role === 'admin' || user.role === 'moderator')
+      ? [{ href: '/admin', icon: Shield }]
+      : []),
+  ];
 
   return (
     <div className="bottom-nav-wrapper md:hidden">

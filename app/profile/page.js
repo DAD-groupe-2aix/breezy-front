@@ -38,7 +38,8 @@ export default function ProfilePage() {
         await userService.updateProfile(user.id, { profilePicture: dataUrl });
         updateUser({ avatar: dataUrl });
       } catch {
-        setSaveError('Erreur lors de la mise à jour de la photo.');
+        setSaveError(t.profilePicError);
+
       }
     };
     reader.readAsDataURL(file);
@@ -59,7 +60,8 @@ export default function ProfilePage() {
       });
       setIsEditing(false);
     } catch (err) {
-      setSaveError(err?.response?.data?.message || 'Erreur lors de la mise à jour du profil.');
+      setSaveError(t.profileUpdateError);
+
     }
   }
 
@@ -113,7 +115,8 @@ export default function ProfilePage() {
 
         <div>
           {userPosts.length === 0 ? (
-            <p className="text-center text-[#64748B] py-10">Aucun post pour l&apos;instant.</p>
+            <p className="text-center text-[#64748B] py-10">{t.noPost}</p>
+
           ) : (
             userPosts.map((post) => <PostCard key={post.id} post={post} />)
           )}
@@ -123,108 +126,108 @@ export default function ProfilePage() {
       {createPortal(
         <AnimatePresence>
           {isEditing && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
-          onClick={(e) => { if (e.target === e.currentTarget) setIsEditing(false); }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 12 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 440, margin: '0 16px' }}>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}
+              onClick={(e) => { if (e.target === e.currentTarget) setIsEditing(false); }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                style={{ background: 'white', borderRadius: 16, padding: 24, width: '100%', maxWidth: 440, margin: '0 16px' }}>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <span style={{ fontWeight: 700, fontSize: 18, color: '#0F172A' }}>{t.editProfile}</span>
-              <button onClick={() => setIsEditing(false)} style={{ color: '#64748B', cursor: 'pointer', background: 'none', border: 'none' }}>
-                <X size={20} />
-              </button>
-            </div>
-
-            {saveError && (
-              <p style={{ fontSize: 13, color: '#EF4444', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>
-                {saveError}
-              </p>
-            )}
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20 }}>
-              <div
-                style={{ position: 'relative', cursor: 'pointer', width: 80, height: 80 }}
-                onClick={() => fileInputRef.current.click()}
-              >
-                {user.avatar ? (
-                  <img src={user.avatar} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
-                ) : (
-                  <div style={{ width: 80, height: 80, borderRadius: '50%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, color: '#64748B' }}>
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div
-                  style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s ease' }}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
-                >
-                  <span style={{ color: 'white', fontSize: 12, fontWeight: 600 }}>Changer</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                  <span style={{ fontWeight: 700, fontSize: 18, color: '#0F172A' }}>{t.editProfile}</span>
+                  <button onClick={() => setIsEditing(false)} style={{ color: '#64748B', cursor: 'pointer', background: 'none', border: 'none' }}>
+                    <X size={20} />
+                  </button>
                 </div>
-              </div>
-              <span style={{ fontSize: 12, color: '#64748B', marginTop: 6 }}>{t.changePic}</span>
-              <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
-            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 4 }}>{t.name}</label>
-                <input
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  maxLength={50}
-                  style={{ width: '100%', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 14, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
-                  onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
-                  onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
-                />
-              </div>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 4 }}>{t.bio}</label>
-                <textarea
-                  value={editBio}
-                  onChange={(e) => setEditBio(e.target.value)}
-                  maxLength={160}
-                  rows={3}
-                  placeholder={t.bioPlaceholder}
-                  style={{ width: '100%', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 14, color: '#0F172A', resize: 'none', outline: 'none', boxSizing: 'border-box' }}
-                  onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
-                  onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
-                />
-              </div>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 4 }}>{t.birthdate}</label>
-                <input
-                  type="date"
-                  value={editBirthdate}
-                  onChange={(e) => setEditBirthdate(e.target.value)}
-                  style={{ width: '100%', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 14, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
-                  onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
-                  onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
-                />
-              </div>
-            </div>
+                {saveError && (
+                  <p style={{ fontSize: 13, color: '#EF4444', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>
+                    {saveError}
+                  </p>
+                )}
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
-              <button
-                onClick={handleSave}
-                style={{ backgroundColor: '#0F172A', color: 'white', fontWeight: 600, padding: '10px 20px', borderRadius: 9999, border: 'none', cursor: 'pointer', fontSize: 14 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1E293B'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F172A'}
-              >
-                {t.save}
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20 }}>
+                  <div
+                    style={{ position: 'relative', cursor: 'pointer', width: 80, height: 80 }}
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    {user.avatar ? (
+                      <img src={user.avatar} alt="avatar" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+                    ) : (
+                      <div style={{ width: 80, height: 80, borderRadius: '50%', backgroundColor: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, color: '#64748B' }}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div
+                      style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.2s ease' }}
+                      onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+                      onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
+                    >
+                      <span style={{ color: 'white', fontSize: 12, fontWeight: 600 }}>Changer</span>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 12, color: '#64748B', marginTop: 6 }}>{t.changePic}</span>
+                  <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 4 }}>{t.name}</label>
+                    <input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      maxLength={50}
+                      style={{ width: '100%', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 14, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
+                      onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
+                      onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 4 }}>{t.bio}</label>
+                    <textarea
+                      value={editBio}
+                      onChange={(e) => setEditBio(e.target.value)}
+                      maxLength={160}
+                      rows={3}
+                      placeholder={t.bioPlaceholder}
+                      style={{ width: '100%', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 14, color: '#0F172A', resize: 'none', outline: 'none', boxSizing: 'border-box' }}
+                      onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
+                      onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 4 }}>{t.birthdate}</label>
+                    <input
+                      type="date"
+                      value={editBirthdate}
+                      onChange={(e) => setEditBirthdate(e.target.value)}
+                      style={{ width: '100%', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 14, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
+                      onFocus={(e) => e.target.style.borderColor = '#3B82F6'}
+                      onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
+                  <button
+                    onClick={handleSave}
+                    style={{ backgroundColor: '#0F172A', color: 'white', fontWeight: 600, padding: '10px 20px', borderRadius: 9999, border: 'none', cursor: 'pointer', fontSize: 14 }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1E293B'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F172A'}
+                  >
+                    {t.save}
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>,
         document.body

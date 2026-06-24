@@ -9,7 +9,6 @@ import MainHeader from '@/components/layout/MainHeader';
 import { useLang } from '@/context/LanguageContext';
 import { postService } from '@/services/postService';
 
-
 function Avatar({ name, avatar }) {
   if (avatar) {
     return <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover shrink-0" />;
@@ -20,7 +19,6 @@ function Avatar({ name, avatar }) {
     </div>
   );
 }
-
 
 export default function HomePage() {
   const { posts, addPost } = usePosts();
@@ -33,16 +31,14 @@ export default function HomePage() {
 
   async function handlePublish() {
     if (!content.trim()) return;
-    setError('');
     try {
       const newPost = await postService.createPost(user.id, content.trim());
       addPost(newPost);
       setContent('');
     } catch (err) {
-      setError(err?.response?.data?.message || 'Erreur lors de la publication.');
+      setError(err?.response?.status === 403 ? t.accountRestricted : t.publishError);
     }
   }
-
 
   return (
     <MainLayout>
@@ -85,5 +81,4 @@ export default function HomePage() {
       </div>
     </MainLayout>
   );
-
 }

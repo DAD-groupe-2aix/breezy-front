@@ -10,6 +10,15 @@ export const userService = {
     const { data } = await api.get(`/users/profile/${authId}`);
     return data;
   },
+  async getAllProfiles() {
+    const { data } = await api.get('/users/profile');
+    return data;
+  },
+
+  async updateStatus(authId, status) {
+    const { data } = await api.put(`/users/profile/${authId}/status`, { status });
+    return data.profile;
+  },
 
   async updateProfile(authId, updates) {
     const { data } = await api.put(`/users/profile/${authId}`, updates);

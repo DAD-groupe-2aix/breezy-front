@@ -55,7 +55,8 @@ export default function UserProfilePage() {
     return (
       <MainLayout>
         <div className="px-4 py-6">
-          <p className="text-[#64748B]">Chargement...</p>
+          <p className="text-[#64748B]">{t.loading}</p>
+
         </div>
       </MainLayout>
     );
@@ -65,7 +66,8 @@ export default function UserProfilePage() {
     return (
       <MainLayout>
         <div className="px-4 py-6">
-          <p className="text-[#64748B]">Utilisateur introuvable.</p>
+          <p className="text-[#64748B]">{t.userNotFound}</p>
+
         </div>
       </MainLayout>
     );
