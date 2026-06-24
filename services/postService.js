@@ -97,4 +97,7 @@ export const postService = {
     await api.post(`/posts/${postId}/comments/${commentId}/like`, { authId });
   },
 
+  async deletePost(postId) {
+    await api.delete(`/posts/${postId}`);
+  },
 };
