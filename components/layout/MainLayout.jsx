@@ -26,7 +26,7 @@ export default function MainLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex">
       <Sidebar />
-      <main className="flex-1 min-h-screen border-x border-[#E2E8F0] bg-white pb-16 md:pb-0">
+     <main className="flex-1 min-h-screen border-x border-[#E2E8F0] bg-white pb-16 md:pb-0 min-w-0">
         {children}
       </main>
       <RightSidebar />

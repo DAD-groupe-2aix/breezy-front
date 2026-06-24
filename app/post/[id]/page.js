@@ -104,7 +104,7 @@ export default function PostDetailPage() {
               <span className="text-sm text-[#64748B] ml-2">· {formatDate(post.createdAt)}</span>
             </div>
           </div>
-          <p className="mt-3 text-[#0F172A] leading-relaxed">{post.content}</p>
+         <p className="mt-3 text-[#0F172A] leading-relaxed break-words">{post.content}</p>
           <p className="mt-3 text-sm text-[#64748B]">
             <span className="font-semibold text-[#0F172A]">{comments.length}</span> {t.commentsLabel} ·{' '}
             <span className="font-semibold text-[#0F172A]">{post.likesCount}</span> {t.likesLabel}

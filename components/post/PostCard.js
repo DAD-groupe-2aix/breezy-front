@@ -200,7 +200,7 @@ export default function PostCard({ post }) {
             </div>
           ) : (
             <>
-              <p className="mt-1 text-sm text-[#0F172A] leading-relaxed">{content}</p>
+              <p className="mt-1 text-sm text-[#0F172A] leading-relaxed break-words">{content}</p>
               {editedAt && (
                 <p className="text-xs text-[#94A3B8] mt-0.5">{t.editedOn} {formatEditDate(editedAt)}</p>
               )}

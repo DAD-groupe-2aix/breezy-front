@@ -52,7 +52,7 @@ export default function CommentCard({ comment, postId }) {
           <span className="text-sm text-[#64748B]">@{comment.author.username}</span>
           <span className="text-sm text-[#64748B]">· {formatDate(comment.createdAt)}</span>
         </div>
-        <p className="mt-1 text-sm text-[#0F172A] leading-relaxed">{comment.content}</p>
+       <p className="mt-1 text-sm text-[#0F172A] leading-relaxed break-words">{comment.content}</p>
         <button
           onClick={handleLike}
           className={`flex items-center gap-1.5 mt-2 transition-colors ${liked ? 'text-[#EF4444]' : 'text-[#64748B] hover:text-[#EF4444]'}`}
