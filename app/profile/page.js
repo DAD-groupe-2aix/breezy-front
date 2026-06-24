@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import Link from 'next/link';
 import MainLayout from '@/components/layout/MainLayout';
 import MainHeader from '@/components/layout/MainHeader';
 import PostCard from '@/components/post/PostCard';
@@ -23,6 +24,10 @@ export default function ProfilePage() {
   const [editBirthdate, setEditBirthdate] = useState('');
   const [saveError, setSaveError] = useState('');
   const fileInputRef = useRef(null);
+
+  const [listType, setListType] = useState(null);
+  const [listUsers, setListUsers] = useState([]);
+  const [listLoading, setListLoading] = useState(false);
 
   if (!user) return null;
 
@@ -71,6 +76,21 @@ export default function ProfilePage() {
     setIsEditing(true);
   }
 
+  async function openList(type) {
+    setListType(type);
+    setListLoading(true);
+    try {
+      const profile = await userService.getProfile(user.id);
+      const ids = profile[type] || [];
+      const profiles = await Promise.all(ids.map((id) => userService.getProfile(id).catch(() => null)));
+      setListUsers(profiles.filter(Boolean));
+    } catch {
+      setListUsers([]);
+    } finally {
+      setListLoading(false);
+    }
+  }
+
   return (
     <MainLayout>
       <MainHeader title={user.name} />
@@ -94,12 +114,12 @@ export default function ProfilePage() {
               <p className="text-sm text-[#64748B] mt-1">{t.bornOn} {user.birthdate}</p>
             )}
             <div className="flex gap-4 mt-2">
-              <span className="text-sm text-[#64748B]">
+              <button onClick={() => openList('following')} className="text-sm text-[#64748B] hover:underline cursor-pointer bg-transparent border-none p-0">
                 <span className="font-bold text-[#0F172A]">{user.followingCount ?? 0}</span> {t.subscriptions}
-              </span>
-              <span className="text-sm text-[#64748B]">
+              </button>
+              <button onClick={() => openList('followers')} className="text-sm text-[#64748B] hover:underline cursor-pointer bg-transparent border-none p-0">
                 <span className="font-bold text-[#0F172A]">{user.followersCount ?? 0}</span> {t.followers}
-              </span>
+              </button>
             </div>
           </div>
         </div>
@@ -211,6 +231,64 @@ export default function ProfilePage() {
                     {t.save}
                   </button>
                 </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {createPortal(
+        <AnimatePresence>
+          {listType && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
+              onClick={(e) => { if (e.target === e.currentTarget) setListType(null); }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="bg-white rounded-2xl p-6 w-full max-w-[400px] mx-4 max-h-[70vh] overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <span className="font-bold text-lg text-[#0F172A]">
+                    {listType === 'following' ? t.subscriptions : t.followers}
+                  </span>
+                  <button onClick={() => setListType(null)} className="text-[#64748B] cursor-pointer bg-transparent border-none">
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {listLoading ? (
+                  <p className="text-sm text-[#64748B]">{t.loading}</p>
+                ) : listUsers.length === 0 ? (
+                  <p className="text-sm text-[#64748B]">{listType === 'following' ? t.followingEmpty : t.noFollowers}</p>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {listUsers.map((p) => (
+                      <Link key={p.authId} href={`/profile/${p.authId}`} onClick={() => setListType(null)}
+                        className="flex items-center gap-3 hover:bg-[#F8FAFC] rounded-lg p-1.5 transition-colors">
+                        {p.profilePicture && p.profilePicture !== 'default-avatar.png' ? (
+                          <img src={p.profilePicture} alt={p.username} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-[#E2E8F0] flex items-center justify-center text-xs font-bold text-[#64748B] shrink-0">
+                            {p.username.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-[#0F172A]">{p.username}</p>
+                          <p className="text-xs text-[#64748B]">@{p.username}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             </motion.div>
           )}
