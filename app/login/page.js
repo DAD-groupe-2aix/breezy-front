@@ -60,9 +60,10 @@ export default function LoginPage() {
           )}
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-[#0F172A]">Courriel</label>
+            <label className="text-sm font-medium text-[#0F172A]">Email ou pseudo</label>
             <input
-              type="email"
+              type="text"
+
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="écrire ici"
