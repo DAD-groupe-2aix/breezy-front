@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { MessageCircle, Heart, UserPlus, UserCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { usePosts } from '@/context/PostsContext';
 import { userService } from '@/services/userService';
 import { postService } from '@/services/postService';
-
 
 function Avatar({ name, avatar }) {
   if (avatar) {
@@ -24,7 +24,8 @@ function formatDate(isoString) {
 }
 
 export default function PostCard({ post }) {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+  const { updatePost } = usePosts();
   const [liked, setLiked] = useState(post.liked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
   const [following, setFollowing] = useState(post.following);
@@ -34,17 +35,19 @@ export default function PostCard({ post }) {
   async function handleLike() {
     const wasLiked = liked;
     const prevCount = likesCount;
-    setLiked(!wasLiked);
-    setLikesCount(wasLiked ? prevCount - 1 : prevCount + 1);
+    const nextLiked = !wasLiked;
+    const nextCount = wasLiked ? prevCount - 1 : prevCount + 1;
+    setLiked(nextLiked);
+    setLikesCount(nextCount);
     setPopping(true);
     try {
       await postService.likePost(post.id, user.id);
+      updatePost(post.id, { liked: nextLiked, likesCount: nextCount });
     } catch {
       setLiked(wasLiked);
       setLikesCount(prevCount);
     }
   }
-
 
   async function handleFollow() {
     const next = !following;
@@ -56,6 +59,8 @@ export default function PostCard({ post }) {
       } else {
         await userService.unfollowUser(post.author.id, user.id);
       }
+      updatePost(post.id, { following: next });
+      updateUser({ followingCount: (user.followingCount ?? 0) + (next ? 1 : -1) });
     } catch {
       setFollowing(!next);
     }
@@ -95,7 +100,6 @@ export default function PostCard({ post }) {
               <MessageCircle size={18} />
               <span className="text-xs">{post.commentsCount}</span>
             </Link>
-
 
             <button
               onClick={handleLike}

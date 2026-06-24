@@ -19,8 +19,12 @@ export function PostsProvider({ children }) {
     setPosts((prev) => [newPost, ...prev]);
   }
 
+  function updatePost(postId, changes) {
+    setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, ...changes } : p)));
+  }
+
   return (
-    <PostsContext.Provider value={{ posts, addPost }}>
+    <PostsContext.Provider value={{ posts, addPost, updatePost }}>
       {children}
     </PostsContext.Provider>
   );

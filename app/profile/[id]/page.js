@@ -11,7 +11,7 @@ import { useLang } from '@/context/LanguageContext';
 
 export default function UserProfilePage() {
   const { id } = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, updateUser } = useAuth();
   const { t } = useLang();
 
   const [profile, setProfile] = useState(null);
@@ -38,6 +38,7 @@ export default function UserProfilePage() {
 
   async function handleFollowToggle() {
     const targetId = Number(id);
+    const next = !following;
     setPopping(true);
     try {
       if (following) {
@@ -45,11 +46,14 @@ export default function UserProfilePage() {
       } else {
         await userService.followUser(targetId, currentUser.id);
       }
-      setFollowing(!following);
+      setFollowing(next);
+      updateUser({ followingCount: (currentUser.followingCount ?? 0) + (next ? 1 : -1) });
     } catch {
-      // état affiché inchangé si l'appel échoue
+      
     }
   }
+
+
 
   if (loading) {
     return (

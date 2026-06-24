@@ -9,6 +9,8 @@ import CommentCard from '@/components/post/CommentCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLang } from '@/context/LanguageContext';
 import { postService } from '@/services/postService';
+import { usePosts } from '@/context/PostsContext';
+
 
 function Avatar({ name, avatar }) {
   if (avatar) {
@@ -29,6 +31,7 @@ function formatDate(isoString) {
 export default function PostDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { updatePost } = usePosts();
   const { t } = useLang();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
@@ -53,10 +56,11 @@ export default function PostDetailPage() {
     if (!reply.trim()) return;
     try {
       const newComment = await postService.createComment(id, user.id, reply.trim());
-      setComments([...comments, newComment]);
+      const updatedComments = [...comments, newComment];
+      setComments(updatedComments);
+      updatePost(id, { commentsCount: updatedComments.length });
       setReply('');
     } catch {
-      // ignoré pour l'instant
     }
   }
 
