@@ -23,12 +23,8 @@ export function PostsProvider({ children }) {
     setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, ...changes } : p)));
   }
 
-  function removePost(postId) {
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
-  }
-
   return (
-    <PostsContext.Provider value={{ posts, addPost, updatePost, removePost }}>
+    <PostsContext.Provider value={{ posts, addPost, updatePost }}>
       {children}
     </PostsContext.Provider>
   );
