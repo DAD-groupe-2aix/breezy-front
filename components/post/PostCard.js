@@ -7,6 +7,8 @@ import { usePosts } from '@/context/PostsContext';
 import { useLang } from '@/context/LanguageContext';
 import { userService } from '@/services/userService';
 import { postService } from '@/services/postService';
+import ImageGrid from './ImageGrid';
+
 
 function Avatar({ name, avatar }) {
   if (avatar) {
@@ -207,8 +209,12 @@ export default function PostCard({ post }) {
             </>
           )}
 
+          <ImageGrid images={post.images} />
+
+
           <div className="flex items-center gap-6 mt-3">
             <Link href={`/post/${post.id}`} className="flex items-center gap-1.5 text-[#64748B] hover:text-[#3B82F6] transition-colors">
+
               <MessageCircle size={18} />
               <span className="text-xs">{post.commentsCount}</span>
             </Link>
