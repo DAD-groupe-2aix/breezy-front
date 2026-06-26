@@ -1,5 +1,6 @@
 'use client';
 
+import { formatDateFR } from '@/services/ageUtils';
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -113,7 +114,9 @@ export default function ProfilePage() {
             <p className="text-sm text-[#64748B]">@{user.username}</p>
             {user.bio && <p className="text-sm text-[#0F172A] mt-1">{user.bio}</p>}
             {user.birthdate && (
-              <p className="text-sm text-[#64748B] mt-1">{t.bornOn} {user.birthdate}</p>
+              <p className="text-sm text-[#64748B] mt-1">
+                 {t.bornOn} {formatDateFR(user.birthdate)}
+              </p>
             )}
             <div className="flex gap-4 mt-2">
               <button onClick={() => openList('following')} className="text-sm text-[#64748B] hover:underline cursor-pointer bg-transparent border-none p-0">
