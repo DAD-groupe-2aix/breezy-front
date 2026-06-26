@@ -22,8 +22,8 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      const { token, user } = await authService.login(email, password);
-      login(user, token);
+      const { user } = await authService.login(email, password);
+      login(user);
       const profile = await userService.getProfile(user.id);
       updateUser(toAuthFields(profile));
       router.push('/home');

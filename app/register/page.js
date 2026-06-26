@@ -1,5 +1,6 @@
 'use client';
 
+import { isOldEnough } from '@/services/ageUtils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -31,9 +32,14 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    if (birthdate && !isOldEnough(birthdate)) {
+    setError('Tu dois avoir au moins 13 ans pour t\'inscrire sur Breezy.');
+    setLoading(false);
+    return;
+  }
     try {
-      const { token, user } = await authService.register(email, password);
-      login(user, token);
+      const { user } = await authService.register(email, password);
+      login(user);
       const extra = {};
       if (birthdate) extra.birthdate = birthdate;
       if (photo) extra.profilePicture = photo;
@@ -41,6 +47,7 @@ export default function RegisterPage() {
       updateUser(toAuthFields(profile));
       router.push('/home');
     } catch (err) {
+      await authService.logout().catch(() => {});
       logout();
       setError(err?.response?.data?.message || 'Erreur lors de la création du compte.');
     } finally {
@@ -127,6 +134,7 @@ export default function RegisterPage() {
               type="date"
               value={birthdate}
               onChange={(e) => setBirthdate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]} 
               className="border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm text-[#0F172A] outline-none focus:border-[#3B82F6]"
             />
           </div>

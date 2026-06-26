@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Wind, LogOut, Moon, Sun, Globe } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { authService } from '@/services/authService';
 import { useTheme } from '@/context/ThemeContext';
 import { useLang } from '@/context/LanguageContext';
 
@@ -22,7 +23,8 @@ export default function SettingsPage() {
     { label: t.moreAbout, href: '/legal/more' },
   ];
 
-  function handleLogout() {
+  async function handleLogout() {
+    await authService.logout().catch(() => {});
     logout();
     router.push('/');
   }

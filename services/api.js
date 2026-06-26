@@ -2,16 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
-});
-
-api.interceptors.request.use((config) => { //middleware axios, s'execute auto avant chaque requete
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
+  withCredentials: true, // envoie les cookies HttpOnly automatiquement sur chaque requête
 });
 
 export default api;
