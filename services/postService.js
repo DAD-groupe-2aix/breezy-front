@@ -24,6 +24,8 @@ async function transformPost(p, currentUserId) {
       avatar: profile?.profilePicture && profile.profilePicture !== 'default-avatar.png' ? profile.profilePicture : null,
     },
     content: p.content,
+    images: p.images ?? [],
+    editedAt: p.editedAt ?? null,
     likesCount: p.likes?.length ?? 0,
     commentsCount: p.comments?.length ?? 0,
     liked: p.likes?.includes(currentUserId) ?? false,
@@ -44,6 +46,7 @@ async function transformComment(c, postId, currentUserId) {
       avatar: profile?.profilePicture && profile.profilePicture !== 'default-avatar.png' ? profile.profilePicture : null,
     },
     content: c.text,
+    images: c.images ?? [],
     likesCount: c.likes?.length ?? 0,
     liked: c.likes?.includes(currentUserId) ?? false,
     createdAt: c.createdAt,
@@ -63,8 +66,8 @@ export const postService = {
     return Promise.all(data.map((p) => transformPost(p, currentUserId)));
   },
 
-  async createPost(authId, content) {
-    const { data } = await api.post('/posts/', { authId, content });
+  async createPost(authId, content, images = []) {
+    const { data } = await api.post('/posts/', { authId, content, images });
     return transformPost(data.post, authId);
   },
 
@@ -86,15 +89,24 @@ export const postService = {
     return Promise.all((post.comments ?? []).map((c) => transformComment(c, postId, currentUserId)));
   },
 
-  async createComment(postId, authId, text) {
-    const { data } = await api.post(`/posts/${postId}/comment`, { authId, text });
+  async createComment(postId, authId, text, images = []) {
+    const { data } = await api.post(`/posts/${postId}/comment`, { authId, text, images });
     const comments = data.post.comments;
     const newComment = comments[comments.length - 1];
     return transformComment(newComment, postId, authId);
   },
 
+
   async likeComment(postId, commentId, authId) {
     await api.post(`/posts/${postId}/comments/${commentId}/like`, { authId });
   },
 
+  async deletePost(postId) {
+    await api.delete(`/posts/${postId}`);
+  },
+
+  async editPost(postId, content) {
+    const { data } = await api.put(`/posts/${postId}`, { content });
+    return data.post;
+  },
 };

@@ -83,9 +83,13 @@ export default function UserProfilePage() {
         <h1 className="text-xl font-bold text-[#0F172A] mb-6">{profile.username}</h1>
 
         <div className="border border-[#E2E8F0] rounded-xl p-6 mb-4 flex gap-4">
-          <div className="w-16 h-16 rounded-full bg-[#E2E8F0] flex items-center justify-center text-xl font-bold text-[#64748B] shrink-0">
-            {profile.username.charAt(0).toUpperCase()}
-          </div>
+          {profile.profilePicture && profile.profilePicture !== 'default-avatar.png' ? (
+            <img src={profile.profilePicture} alt={profile.username} className="w-16 h-16 rounded-full object-cover shrink-0" />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-[#E2E8F0] flex items-center justify-center text-xl font-bold text-[#64748B] shrink-0">
+              {profile.username.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div>
             <p className="font-bold text-[#0F172A]">{profile.username}</p>
             <p className="text-sm text-[#64748B]">@{profile.username}</p>

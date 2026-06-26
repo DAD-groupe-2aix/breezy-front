@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { postService } from '@/services/postService';
+import ImageGrid from './ImageGrid';
+
 
 function Avatar({ name, avatar }) {
   if (avatar) {
@@ -25,6 +27,7 @@ function formatDate(isoString) {
 export default function CommentCard({ comment, postId }) {
   const { user } = useAuth();
   const [liked, setLiked] = useState(comment.liked);
+
   const [likesCount, setLikesCount] = useState(comment.likesCount);
 
   async function handleLike() {
@@ -45,13 +48,14 @@ export default function CommentCard({ comment, postId }) {
       <Avatar name={comment.author.name} avatar={comment.author.avatar} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <Link href={`/profile/${comment.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
+          <Link href={comment.author.id === user.id ? '/profile' : `/profile/${comment.author.id}`} className="font-semibold text-sm text-[#0F172A] hover:underline">
             {comment.author.name}
           </Link>
           <span className="text-sm text-[#64748B]">@{comment.author.username}</span>
           <span className="text-sm text-[#64748B]">· {formatDate(comment.createdAt)}</span>
         </div>
-        <p className="mt-1 text-sm text-[#0F172A] leading-relaxed">{comment.content}</p>
+        <p className="mt-1 text-sm text-[#0F172A] leading-relaxed break-words">{comment.content}</p>
+        <ImageGrid images={comment.images} />
         <button
           onClick={handleLike}
           className={`flex items-center gap-1.5 mt-2 transition-colors ${liked ? 'text-[#EF4444]' : 'text-[#64748B] hover:text-[#EF4444]'}`}

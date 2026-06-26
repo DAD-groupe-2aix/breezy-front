@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Image as ImageIcon, X } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import PostCard from '@/components/post/PostCard';
 import { usePosts } from '@/context/PostsContext';
@@ -24,17 +25,35 @@ export default function HomePage() {
   const { posts, addPost } = usePosts();
   const { user } = useAuth();
   const [content, setContent] = useState('');
+  const [images, setImages] = useState([]);
   const [error, setError] = useState('');
   const { t } = useLang();
 
   if (!user) return null;
 
+  function handleImageChange(e) {
+    const files = Array.from(e.target.files).slice(0, 4 - images.length);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImages((prev) => [...prev, event.target.result].slice(0, 4));
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  }
+
+  function removeImage(index) {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function handlePublish() {
     if (!content.trim()) return;
     try {
-      const newPost = await postService.createPost(user.id, content.trim());
+      const newPost = await postService.createPost(user.id, content.trim(), images);
       addPost(newPost);
       setContent('');
+      setImages([]);
     } catch (err) {
       setError(err?.response?.status === 403 ? t.accountRestricted : t.publishError);
     }
@@ -62,7 +81,29 @@ export default function HomePage() {
               rows={3}
               className="w-full resize-none text-sm text-[#0F172A] placeholder-[#64748B] outline-none"
             />
-            <div className="flex justify-end mt-2">
+
+            {images.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {images.map((src, i) => (
+                  <div key={i} className="relative">
+                    <img src={src} alt="" className="w-full h-28 object-cover rounded-lg" />
+                    <button
+                      onClick={() => removeImage(i)}
+                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mt-2">
+              <label className={`cursor-pointer text-[#3B82F6] ${images.length >= 4 ? 'opacity-40 pointer-events-none' : ''}`}>
+                <ImageIcon size={20} />
+                <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageChange} disabled={images.length >= 4} />
+              </label>
+
               <button
                 onClick={handlePublish}
                 disabled={!content.trim()}
