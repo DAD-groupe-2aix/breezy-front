@@ -6,7 +6,7 @@ import { LanguageProvider } from '@/context/LanguageContext';
 
 export const metadata = {
   title: 'Breezy',
-  description: 'Le réseau social pour les gays',
+  description: 'La new wave du réseau social',
 };
 
 export const viewport = {
